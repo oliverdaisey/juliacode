@@ -97,7 +97,7 @@ end
 
 
 function is_minkowski_label_mixed(minkowski_label::Vector{Int})
-    return findfirst(iszero,minkowski_label)==nothing
+    return findfirst(iszero,minkowski_label)===nothing
 end
 
 P1 = [[0,0], [1,0], [0,1], [1,1]]
