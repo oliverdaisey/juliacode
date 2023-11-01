@@ -36,8 +36,6 @@ function polyhedral_lift(A::Matrix{Int}, ω::Vector{Int})
     inequalities_matrix = zero_matrix(QQ, n+1, n+1)
     inequalities_matrix[n+1, n+1] = 1
 
-    println(inequalities_matrix)
-
     # b = zero_matrix(QQ, n+1, 1)
     # b = [b...] # convert b to a form that the polymake interface likes
     b = zeros(QQ, n+1)
@@ -68,6 +66,7 @@ function normal_complex(A::Matrix{Int}, ω::Vector{Int})
 
     return common_refinement(polyhedral_complex_from_fan(fan), plane_to_complex)
     # to do: return the projection forgetting the last coordinate
+    # WARNING: functions involved here do not work as expected!!
 
 end
 
@@ -83,7 +82,63 @@ function polyhedral_complex_from_fan(Σ::PolyhedralFan)
     
 end
 
+function polyhedral_complex_from_polyhedra(Sigma::Vector{<:Polyhedron})
+    ###
+    # Construct matrix and incidence matrix of vertices and rays
+    ###
+    SigmaVertexIncidences = Vector{Int}[]
+    SigmaVertices = Vector{QQFieldElem}[]
+    SigmaRayIncidences = Vector{Int}[]
+    SigmaRays = Vector{QQFieldElem}[]
+    for sigma in Sigma
+        sigmaVertexIncidence = Int[]
+        for vertex in vertices(sigma)
+            i = findfirst(isequal(vertex),SigmaVertices)
+            if i === nothing
+                push!(SigmaVertices,vertex)
+                push!(sigmaVertexIncidence,length(SigmaVertices))
+            else
+                push!(sigmaVertexIncidence,i)
+            end
+        end
+        push!(SigmaVertexIncidences,sigmaVertexIncidence)
+
+        sigmaRayIncidence = Int[]
+        for ray in rays(sigma)
+            i = findfirst(isequal(ray),SigmaRays)
+            if i === nothing
+                push!(SigmaRays,ray)
+                push!(sigmaRayIncidence,length(SigmaRays))
+            else
+                push!(sigmaRayIncidence,i)
+            end
+        end
+        push!(SigmaRayIncidences,sigmaRayIncidence)
+    end
+
+    ###
+    # Concatenate vertically matrixes of vertices and rays,
+    # shift incidence matrix of rays and concatenate it horizontally to incicende matrix of vertices,
+    # dehomogenize generators of lineality space
+    ###
+    SigmaVerticesAndRays = matrix(QQ,vcat(SigmaVertices,SigmaRays))
+    SigmaRayIncidences = (x -> x .+length(SigmaVertices)).(SigmaRayIncidences)
+    SigmaVertexAndRayIncidences = IncidenceMatrix([vcat(iv,ir) for (iv,ir) in zip(SigmaVertexIncidences,SigmaRayIncidences)])
+
+    ###
+    # Dehomogenize lineality space
+    ###
+    SigmaLineality = matrix(QQ,lineality_space(first(Sigma)))
+
+    return polyhedral_complex(SigmaVertexAndRayIncidences,
+                              SigmaVerticesAndRays,
+                              collect(length(SigmaVertices)+1:nrows(SigmaVerticesAndRays)),
+                              SigmaLineality)
+end
+
+# driver code
 A = [0 0 1 1; 0 2 0 1]
 ω = [0, 0, 0, -2]
 
 refinement = normal_complex(A, ω)
+maximal_polyhedra(refinement)

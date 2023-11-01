@@ -14,11 +14,32 @@ This function computes the Cayley embedding of two point configurations.
 the point configuration of the Cayley embedding.
 """
 function cayley_embedding(P1::Vector{Vector{Int}}, P2::Vector{Vector{Int}})
-    @assert length(unique(length.(vcat(P1,P2)))) == 1 "points in P1 and P2 must have same dimension"
+    @req length(unique(length.(vcat(P1,P2)))) == 1 "points in P1 and P2 must have same dimension"
 
     P1padded = [ vcat(p1, [1,0]) for p1 in P1 ]
     P2padded = [ vcat(p2, [0,1]) for p2 in P2 ]
     return vcat(P1padded, P2padded)
+
+end
+
+"""
+Cayley embedding given a vector of point configurations.
+"""
+function cayley_embedding(M::Vector{Matrix{QQFieldElem}})
+
+    @req length(unique(ncols.(M))) == 1 "points in M must have same dimension"
+
+    m = length(M) # number of point configurations
+
+    for i in 1:m
+        k = nrows(M[i]) # number of points in configuration i
+        columns_to_append = matrix(QQ, zeros(QQ, k, m))
+        columns_to_append[:,i] = ones(Int, k)
+        columns_to_append = QQFieldElem.(columns_to_append) # make types happy
+        M[i] = hcat(M[i], columns_to_append)
+    end
+
+    return reduce(vcat, M)
 
 end
 
@@ -99,6 +120,8 @@ end
 function is_minkowski_label_mixed(minkowski_label::Vector{Int})
     return findfirst(iszero,minkowski_label)===nothing
 end
+
+# driver code
 
 P1 = [[0,0], [1,0], [0,1], [1,1]]
 P2 = [[0,0], [1,0], [2,1]]
