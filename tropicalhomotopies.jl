@@ -47,3 +47,43 @@ function polyhedral_lift(A::Matrix{Int}, ω::Vector{Int})
     return upper_hull + half_line
 
 end
+
+function normal_complex(A::Matrix{Int}, ω::Vector{Int})
+
+    n = nrows(A)
+    fan = normal_fan(polyhedral_lift(A, ω))
+    
+    # compute the RHS of the wedge
+    equations_matrix = zeros(QQ, n+1)
+    equations_matrix[n+1] = 1
+
+    plane = polyhedron((zeros(QQ, n+1), [0]), (equations_matrix, 1))
+    
+    plane_to_complex = polyhedral_complex(
+        IncidenceMatrix([[1]]),
+        equations_matrix,
+        Vector{Int}(),
+        lineality_space(plane)
+    )
+
+    return common_refinement(polyhedral_complex_from_fan(fan), plane_to_complex)
+    # to do: return the projection forgetting the last coordinate
+
+end
+
+function polyhedral_complex_from_fan(Σ::PolyhedralFan)
+
+    rayvectors = [convert(Vector{QQFieldElem}, ray) for ray in rays(Σ)]
+    
+    return polyhedral_complex(
+        maximal_cones(IncidenceMatrix, Σ),
+        rayvectors, 
+        [i for i in 1:length(rayvectors)],
+        lineality_space(Σ))
+    
+end
+
+A = [0 0 1 1; 0 2 0 1]
+ω = [0, 0, 0, -2]
+
+refinement = normal_complex(A, ω)
