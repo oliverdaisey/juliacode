@@ -64,6 +64,8 @@ function normal_complex(A::Matrix{Int}, ω::Vector{Int})
         lineality_space(plane)
     )
 
+    return polyhedral_complex_from_fan(fan)
+
     return common_refinement(polyhedral_complex_from_fan(fan), plane_to_complex)
     # to do: return the projection forgetting the last coordinate
     # WARNING: functions involved here do not work as expected!!

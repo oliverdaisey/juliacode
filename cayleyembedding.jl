@@ -43,6 +43,39 @@ function cayley_embedding(M::Vector{Matrix{QQFieldElem}})
 
 end
 
+"""
+
+"""
+function minkowski_sum_points(M::Vector{Matrix{Int}}, W::T=nothing) where {T<:Union{Nothing, Vector{Vector{Int}}}}
+
+    @req length(unique(ncols.(M))) == 1 "points in M must have same dimension"
+    @req isnothing(W) || length(W) == length(M) "number of weight vectors must match number of point configurations"
+    @req isnothing(W) || unique([length(W[i]) == nrows(M[i]) for i in 1:length(W)]) == [true] "number of weights in weight vector must match number of points in point configuration"
+
+    ms = Vector{Int}[]
+    m = length(M) # number of point configurations
+
+    for I in Iterators.product([1:nrows(M[i]) for i in 1:m]...)
+        vec = [M[i][I[i],:] for i in 1:m]
+        push!(ms, sum(vec))
+    end
+
+    uniquems = unique(ms)
+
+    if T != Nothing
+        ws = Int[]
+        for I in Iterators.product([1:length(W[i]) for i in 1:length(W)]...)
+            push!(ws, sum([W[i][I[i]] for i in 1:length(W)]))
+        end
+        uniquews = [reduce(min, ws[findall(x -> x == pt, ms)]) for pt in uniquems]
+        return uniquems, uniquews
+    end
+
+    return uniquems
+
+end
+
+
 function minkowski_sum_points(P1::Vector{Vector{Int}}, P2::Vector{Vector{Int}}, w1::T=nothing, w2::T=nothing) where {T<:Union{Nothing, Vector{Int}}}
 
     @assert length(unique(length.(vcat(P1,P2)))) == 1 "points in P1 and P2 must have same dimension"
