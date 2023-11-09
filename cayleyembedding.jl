@@ -24,6 +24,7 @@ end
 
 """
 Cayley embedding given a vector of point configurations.
+TO DO: Fix this so it doesn't modify M
 """
 function cayley_embedding(M::Vector{Matrix{QQFieldElem}})
 
@@ -46,13 +47,13 @@ end
 """
 Minkowski sum of a vector of point configurations, with optional weights.
 """
-function minkowski_sum_points(M::Vector{Matrix{Int}}, W::T=nothing) where {T<:Union{Nothing, Vector{Vector{Int}}}}
+function minkowski_sum_points(M::Vector{Matrix{QQFieldElem}}, W::T=nothing) where {T<:Union{Nothing, Vector{Vector{Int}}}}
 
     @req length(unique(ncols.(M))) == 1 "points in M must have same dimension"
     @req isnothing(W) || length(W) == length(M) "number of weight vectors must match number of point configurations"
     @req isnothing(W) || unique([length(W[i]) == nrows(M[i]) for i in 1:length(W)]) == [true] "number of weights in weight vector must match number of points in point configuration"
 
-    ms = Vector{Int}[]
+    ms = Vector{QQFieldElem}[]
     m = length(M) # number of point configurations
 
     for I in Iterators.product([1:nrows(M[i]) for i in 1:m]...)
@@ -114,9 +115,38 @@ function minkowski_sum_regular_subdivision(M::Vector{Matrix{QQFieldElem}}, W::Ve
     minkowski_cells = Vector{Int}[]
     minkowski_labels = Vector{Int}[]
     n = ncols(M[1]) # dimension of points
+    m = length(M) # number of point configurations
 
     for sigma in maximal_cells(cayley_subdivision)
-        # to do: write this loop
+        sigma_points = cayley_points[sigma]
+        println(sigma_points)
+        sigma_points_flattened = []
+        for i in 1:m
+            if sigma_points[n+i]==1
+                push!(sigma_points_flattened, sigma_points[1:n])
+            end
+        end
+        minkowski_cell_points = Vector{Int}[]
+        for I in Iterators.product([1:length(sigma_points_flattened[i]) for i in 1:m]...)
+            vec = [sigma_points_flattened[i][I[i]] for i in 1:m]
+            push!(minkowski_cell_points, sum(vec))
+        end
+
+        minkowski_cell = Int[]
+        for minkowski_cell_point in minkowski_cell_points
+            push!(minkowski_cell, findfirst(isequal(minkowski_cell_point), minkowski_points))
+        end
+
+        minkowski_label = [dim(convex_hull(sigma_points_flattened[i])) for i in 1:m]
+
+        push!(minkowski_cells, minkowski_cell)
+        push!(minkowski_labels, minkowski_label)
+    end
+
+    minkowski_subdivision = subdivision_of_points(matrix(QQ,minkowski_points), IncidenceMatrix(minkowski_cells))
+    minkowski_labels = Dict(zip(minkowski_cells,minkowski_labels))
+
+    return minkowski_subdivision, minkowski_labels
 
 
 end
