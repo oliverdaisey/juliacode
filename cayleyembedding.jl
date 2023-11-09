@@ -44,7 +44,7 @@ function cayley_embedding(M::Vector{Matrix{QQFieldElem}})
 end
 
 """
-
+Minkowski sum of a vector of point configurations, with optional weights.
 """
 function minkowski_sum_points(M::Vector{Matrix{Int}}, W::T=nothing) where {T<:Union{Nothing, Vector{Vector{Int}}}}
 
@@ -102,6 +102,22 @@ function minkowski_sum_points(P1::Vector{Vector{Int}}, P2::Vector{Vector{Int}}, 
     end
 
     return uniquems
+
+end
+
+function minkowski_sum_regular_subdivision(M::Vector{Matrix{QQFieldElem}}, W::Vector{Vector{Int}})
+    
+    cayley_points = cayley_embedding(M)
+    cayley_subdivision = subdivision_of_points(matrix(QQ, cayley_points), vcat(W...))
+
+    minkowski_points = minkowski_sum_points(M)
+    minkowski_cells = Vector{Int}[]
+    minkowski_labels = Vector{Int}[]
+    n = ncols(M[1]) # dimension of points
+
+    for sigma in maximal_cells(cayley_subdivision)
+        # to do: write this loop
+
 
 end
 
