@@ -26,11 +26,14 @@ end
 Cayley embedding given a vector of point configurations.
 TO DO: Fix this so it doesn't modify M
 """
-function cayley_embedding(M::Vector{Matrix{QQFieldElem}})
+function cayley_embedding(N::Vector{Matrix{QQFieldElem}})
+
+    M = N
 
     @req length(unique(ncols.(M))) == 1 "points in M must have same dimension"
 
     m = length(M) # number of point configurations
+    
 
     for i in 1:m
         k = nrows(M[i]) # number of points in configuration i
@@ -204,14 +207,14 @@ end
 
 P1 = [[0,0], [1,0], [0,1], [1,1]]
 P2 = [[0,0], [1,0], [2,1]]
+P3 = [[1,1], [-2,3], [0,0]]
+
 w1 = [0,-1,-1,-2]
 w2 = [0,0,0]
-minkowski_subdivision, minkowski_labels = minkowski_sum_regular_subdivision(P1, P2, w1, w2)
-println(is_minkowski_label_mixed.(values(minkowski_labels)))
+w3 = [-1,-1,0]
 
-P1 = [[0,0],[1,0],[0,1]]
-P2 = [[0,0],[1,0],[0,1]]
-w1 = [0,0,0]
-w2 = [0,-1,0]
-minkowski_subdivision, minkowski_labels = minkowski_sum_regular_subdivision(P1, P2, w1, w2)
+P = [P1,P2,P3]
+W = [w1,w2,w3]
+
+minkowski_subdivision, minkowski_labels = minkowski_sum_regular_subdivision(P, W)
 println(is_minkowski_label_mixed.(values(minkowski_labels)))
