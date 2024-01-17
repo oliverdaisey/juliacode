@@ -32,7 +32,7 @@ Let us suppose we are given a list of point configurations $A_1, ..., A_m$, all 
 A cell $\sigma \in \Delta_w$ is a \textit{mixed cell} if it has exactly two points from each $A_i$. Fixing a cell $\sigma$, we ask for all lifts $w$ that produce $\sigma$ as a mixed cell of $\Delta_w$. The Euclidean closure of this set is the \textit{mixed cell cone of $\sigma$}.
 
 \subsection{Computing the mixed cell cone}
-To compute the mixed cell cone $C_\sigma$, let $m_i$ be the number of points in $M_i$. Lemma 4.4 of Anders' paper tells us that we can use $k = \sum_i{m_i - 2}$ irredundant inequalities. To get them, look at the submatrices of $A$ of size $2n \times (2n + 1)$ involving the $2n$ columns of the mixed cell, along with one additional column, with index $\gamma$ say. Choose non-zero $c \in \text{NullSpace(A)}$ with the condition that the entry in $c$ with index $\gamma$ is negative. Then the inequality is $w\cdot c \geq 0$. We call this choice of $c$ a \textit{circuit}. It defines a facet $F$ of $C_\sigma$.
+To compute the mixed cell cone $C_\sigma$, let $m_i$ be the number of points in $M_i$. Lemma 4.4 of Anders' paper tells us that we can use $k = \sum_i{m_i - 2}$ irredundant inequalities. To get them, look at the submatrices $A'$ of $A$ of size $2n \times (2n + 1)$ involving the $2n$ columns of the mixed cell, along with one additional column, with index $\gamma$ say. Choose non-zero $c \in \text{NullSpace(A')}$ with the condition that the entry in $c$ with index $\gamma$ is negative. Then the inequality is $w\cdot c \geq 0$. We call this choice of $c$ a \textit{circuit}. It defines a facet $F$ of $C_\sigma$.
 
 \subsection{Bistellar flip algorithm}
 Suppose we are given a mixed cell $\sigma$ of $A$. The $k$ linear inequalities defining the mixed cell cone $C_\sigma$ let us choose a generic $w \in F$ in one of their corresponding facets. The bistellar flip algorithm uses this data to take the set of all mixed cells $A_{mix}$ with respect to $w + \varepsilon c$ to the set of all mixed cells $B_{mix}$ with respect to $w - \varepsilon c$, where $\varepsilon > 0$ is sufficiently small. To do this:
@@ -50,5 +50,9 @@ Suppose we are given a mixed cell $\sigma$ of $A$. The $k$ linear inequalities d
 	 \end{enumerate}
 	 \item Return $B_{mix}$.
 \end{enumerate}
+
+\newpage
+
+\subsection{Walking through the mixed cell cone}
 
 \end{document}
