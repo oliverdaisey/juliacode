@@ -18,8 +18,6 @@ function compute_starting_data(F::TropicalTuple, variables::Vector{TropicalPoly}
     # compute plueker indices
     pluecker_indices = subsets(collect(1:(n+1)), k+1)
     pluecker_vector = [0 for i in 1:length(pluecker_indices)]
-    println(pluecker_indices)
-    println(pluecker_vector)
     p_start = PluckerVector(pluecker_indices, pluecker_vector)
 
 
@@ -47,19 +45,33 @@ function compute_starting_data(F::TropicalTuple, variables::Vector{TropicalPoly}
     # step 3: raise linear forms to appropriate powers
     deg = [get_degree(F[i]) for i in 1:k]
     for i in 1:k
-        linear_forms[i] = linear_forms[i]^deg[i]
+        linear_forms[i] = linear_forms[i]^deg[i] # sometimes you will get a "characteristic not known" error
     end
 
     # step 4: compute mixed cell
-    Σ = Vector{Polyhedron}
+    Σ = Vector{Polyhedron}()
 
-    # to do: compute these convex hulls by writing ei in coordinates
     for i in 1:k
-        σ_i = deg[i] * convex_hull(e0, ei)
+        # I need to get better at Julia vector/matrix ops
+        ei = [0 for j in 0:n]
+        e0 = [0 for j in 0:n]
+        e0[1] = 1
+        ei[i+1] = 1
+        M = matrix(QQ, vcat(e0', ei'))
+        σ_i = deg[i] * convex_hull(M)
         push!(Σ, σ_i)
-    σ_p = convex_hull(e0, ek+1 + ek+2 + ... + en)
+    end
 
-    S = Set([sum(σ_i for σ_i in Σ) + σ_p])
+    # construct vertices of σ_p
+    M = matrix(QQ, zeros(QQ, n-k+1, n+1))
+    M[1,1] = 1
+    for i in 1:n-k
+        M[i+1, k+1+i] = 1
+    end
+
+    σ_p = convex_hull(M)
+
+    S = sum(σ_i for σ_i in Σ) + σ_p
 
     return (p_start, linear_forms, S)
 
@@ -78,4 +90,13 @@ function get_degree(f)::Int
     end
 
     return Int(degree)
+end
+
+function run_example()
+    f0 = w^2 + w*x + x^2 + w*y + x*y + y^2 + w*z + x*z + y*z + z^2
+    variables = [w, x, y, z]
+
+    starting_data = compute_starting_data((f0,), variables)
+
+    return starting_data
 end
