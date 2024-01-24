@@ -93,6 +93,7 @@ function get_degree(f)::Int
 end
 
 function run_example()
+    R, (w, x, y, z) = T["w", "x", "y", "z"]
     f0 = w^2 + w*x + x^2 + w*y + x*y + y^2 + w*z + x*z + y*z + z^2
     variables = [w, x, y, z]
 
