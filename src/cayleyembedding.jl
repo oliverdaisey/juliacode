@@ -24,26 +24,24 @@ end
 
 """
 Cayley embedding given a vector of point configurations.
-TO DO: Fix this so it doesn't modify M
 """
-function cayley_embedding(N::Vector{Matrix{QQFieldElem}})
+function cayley_embedding(N::Vector{QQMatrix})
 
-    M = N
+    M = copy(N)
 
-    @req length(unique(ncols.(M))) == 1 "points in M must have same dimension"
+    @req length(unique(nrows.(M))) == 1 "points in M must have same dimension"
 
     m = length(M) # number of point configurations
     
 
     for i in 1:m
-        k = nrows(M[i]) # number of points in configuration i
-        columns_to_append = matrix(QQ, zeros(QQ, k, m))
-        columns_to_append[:,i] = ones(Int, k)
-        columns_to_append = QQFieldElem.(columns_to_append) # make types happy
-        M[i] = hcat(M[i], columns_to_append)
+        k = ncols(M[i]) # number of points in configuration i
+        rows_to_append = matrix(QQ, zeros(QQ, m, k))
+        rows_to_append[i,:] = ones(Int, k)
+        M[i] = vcat(M[i], rows_to_append)
     end
 
-    return reduce(vcat, M)
+    return reduce(hcat, M)
 
 end
 
@@ -202,19 +200,3 @@ end
 function is_minkowski_label_mixed(minkowski_label::Vector{Int})
     return findfirst(iszero,minkowski_label)===nothing
 end
-
-# driver code
-
-P1 = [[0,0], [1,0], [0,1], [1,1]]
-P2 = [[0,0], [1,0], [2,1]]
-P3 = [[1,1], [-2,3], [0,0]]
-
-w1 = [0,-1,-1,-2]
-w2 = [0,0,0]
-w3 = [-1,-1,0]
-
-P = [P1,P2,P3]
-W = [w1,w2,w3]
-
-minkowski_subdivision, minkowski_labels = minkowski_sum_regular_subdivision(P, W)
-println(is_minkowski_label_mixed.(values(minkowski_labels)))
