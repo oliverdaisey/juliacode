@@ -1,10 +1,6 @@
 using Oscar
 using Revise
-
-# alias for a tuple of tropical polynmomials
-TropicalTuple{N} = NTuple{N, AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}}}
-TropicalPoly = AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}} # alias for a tropical polynomial
-PluckerVector = Pair{Vector{Vector{Int}}, Vector{Int}}
+include("bistellarflips.jl")
 
 T = tropical_semiring()
 
