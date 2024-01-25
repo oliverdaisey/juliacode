@@ -65,11 +65,11 @@ function compute_starting_data(F::TropicalTuple, variables::Vector{TropicalPoly}
     for i in 1:n-k
         M[i+1, k+1+i] = 1
     end
-
+    println(M)
     σ_p = convex_hull(M)
 
     S = sum(σ_i for σ_i in Σ) + σ_p
-
+    
     return (p_start, linear_forms, S)
 
 end
@@ -117,6 +117,7 @@ function run_example()
     M = cayley_embedding([pluecker_points, newton_points])
     
     # need to get the indices for the pluecker part of the mixed cell
+    return S
 end
 
 run_example()
