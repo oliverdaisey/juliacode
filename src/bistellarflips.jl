@@ -212,6 +212,7 @@ function mixed_cell_cone(A1::QQMatrix, A2::QQMatrix, facet_of_matroid_polytope::
     v = vertices(facet_of_matroid_polytope)
 
     generalized_mixed_cell = [(v), σ_A1, σ_A2]
+
     
     return generalized_mixed_cell
 end

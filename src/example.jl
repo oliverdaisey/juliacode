@@ -2,8 +2,8 @@ using Oscar
 using Revise
 
 # alias for a tuple of tropical polynmomials
-TropicalTuple{N} = NTuple{N, AbstractAlgebra.Generic.MPoly{TropicalSemiringElem{typeof(min)}}}
-TropicalPoly = AbstractAlgebra.Generic.MPoly{TropicalSemiringElem{typeof(min)}} # alias for a tropical polynomial
+TropicalTuple{N} = NTuple{N, AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}}}
+TropicalPoly = AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}} # alias for a tropical polynomial
 PluckerVector = Pair{Vector{Vector{Int}}, Vector{Int}}
 
 T = tropical_semiring()
@@ -27,7 +27,7 @@ function compute_starting_data(F::TropicalTuple, variables::Vector{TropicalPoly}
         
         l_i = T(0)
         # compute coefficients
-        c::Vector{TropicalSemiringElem{typeof(min)}} = [T.(0) for j in 0:n]
+        c::Vector{Oscar.TropicalSemiringElem{typeof(min)}} = [T.(0) for j in 0:n]
         for j in 0:n
             if j > k
                 c[j+1] = T(-1)
