@@ -249,7 +249,7 @@ Returns the coefficients of the definining hyperplane for the mixed cell cone in
 INPUTS:
 - ``mixed_cell_indices::Vector{Int}``: the indices of the columns of the cayley matrix defining the generalized mixed cell.
 - ``extra_index::Int``: an extra index not belonging to the mixed cell.
-- ``M::QQMatrix``: the cayley matrix of the point configurations
+- ``M::QQMatrix``: the cayley matrix of the point configurations, encoded as columns.
 """
 function cone_coefficients(mixed_cell_indices::Vector{Int}, extra_index::Int, M::QQMatrix)
     # get submatrix defined by indices in I

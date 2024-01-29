@@ -5,10 +5,11 @@ include("cayleyembedding.jl")
 
 T = tropical_semiring()
 
-function compute_starting_data(F::TropicalTuple, variables::Vector{TropicalPoly})
+function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
 
     k = length(F)
-    n = length(variables) - 1
+    n = ngens(parent(F[1])) - 1
+    variables = gens(parent(F[1]))
 
     # step 1: compute p_start
 
@@ -67,7 +68,6 @@ function compute_starting_data(F::TropicalTuple, variables::Vector{TropicalPoly}
     end
     println(M)
     σ_p = convex_hull(M)
-
     S = sum(σ_i for σ_i in Σ) + σ_p
     
     return (p_start, linear_forms, S)
@@ -89,35 +89,13 @@ function get_degree(f)::Int
     return Int(degree)
 end
 
-function run_example()
-    n = 3
-    k = 1
-    R, (w, x, y, z) = T["w", "x", "y", "z"]
-    f0 = w^2 + w*x + x^2 + w*y + x*y + y^2 + w*z + x*z + y*z + z^2
-    variables = [w, x, y, z]
+n = 3
+k = 1
+R, (w, x, y, z) = T["w", "x", "y", "z"]
+f0 = w^2 + w*x + x^2 + w*y + x*y + y^2 + w*z + x*z + y*z + z^2
+variables = [w, x, y, z]
 
-    p_start, linear_forms, S = compute_starting_data((f0,), variables)
-    
-    # get the support of f0
-    newton_points = [Vector{Int}(f0.exps[:,i]) for i in 1:ncols(f0.exps)]
+p_start, f_start, S = total_degree_starting_data((f0,), variables)
 
-    # get the support of the pluecker vector
-    pluecker_points = Vector{Vector{Int}}()
-    for B in p_start[1]
-        pluecker_point = zeros(Int, n+1)
-        for b in B
-            pluecker_point[b] = 1
-        end
-        push!(pluecker_points, pluecker_point)
-    end
+L_p = tropical_linear_space(p_start[1], T.(p_start[2]))
 
-    newton_points = transpose(matrix(QQ, newton_points))
-    pluecker_points = transpose(matrix(QQ, vcat(pluecker_points)))
-    
-    M = cayley_embedding([pluecker_points, newton_points])
-    
-    # need to get the indices for the pluecker part of the mixed cell
-    return S
-end
-
-run_example()
