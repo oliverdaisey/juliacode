@@ -1,0 +1,252 @@
+\documentclass[12pt,reqno,a4paper]{amsart}
+\usepackage[doi=true,isbn=false,style=alphabetic,sorting=nyt,backend=biber,maxnames=5,maxalphanames=5,giveninits=true]{biblatex}
+\AtEveryBibitem{\clearlist{language}}
+\bibliography{main}
+
+\usepackage[breaklinks,colorlinks,plainpages,hypertexnames=false,plainpages=false]{hyperref}
+\hypersetup{urlcolor=blue, citecolor=blue, linkcolor=blue}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{enumerate}
+\usepackage{mathtools}
+\usepackage{tikz-cd}
+\usepackage{hhline}
+\usepackage{stmaryrd}
+\usepackage{enumitem}
+\usepackage{centernot}
+\usepackage[textwidth=25mm]{todonotes}
+\setlength{\marginparwidth}{25mm}% making todonotes fit the page
+\usepackage{mathrsfs}
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage[capitalise, noabbrev]{cleveref} %for \cref
+\usepackage[noend]{algorithmic} % for the algorithmic environment
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\renewcommand\algorithmiccomment[1]{#1}
+\usepackage{mathdots}
+\usepackage{cleveref} % for \cref
+\usepackage{nicematrix} % for NiceMatrix
+\usepackage{mathalpha} % for various math fonts
+\DeclareMathAlphabet{\dutchcal}{U}{dutchcal}{m}{n}
+\newcommand{\dcu}{\dutchcal{u}}
+\newcommand{\dcv}{\dutchcal{v}}
+\newcommand{\dcw}{\dutchcal{w}}
+
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+
+\newcommand{\yue}[1]{{\textcolor{red!50!black}{Yue: #1}}}
+
+\newcommand*\angles[1]{\langle #1 \rangle}
+
+\newcommand{\intraequational}{intra-equational}
+\newcommand{\intramonomial}{intra-monomial}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Page settings %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%\setlength{\parindent}{0pt}
+%\setlength{\parskip}{6pt}
+\renewcommand{\baselinestretch}{1.1}
+\setlength{\oddsidemargin}{-1in} % Linker Rand 30mm vom Papierrand
+\addtolength{\oddsidemargin}{30mm}
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\textwidth}{150mm} % Rechter Rand 30mm vom Papierrand
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Begin Graphics Section %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{matrix}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes}
+\usetikzlibrary{patterns}
+\usetikzlibrary{fit,backgrounds,scopes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% End Graphics Section %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Begin Theorem Section  %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtheoremstyle{theoremstyle}
+{10pt}      %  Space above
+{5pt}       %  Space below
+{\itshape}  %  Body font
+{}          %  Indent amount (empty = no indent, \parindent = para indent)
+{\bfseries} %  Thm head font
+{}         %  Punctuation after thm head
+{ }      %  Space after thm head: " " = normal interword space;
+% \newline = linebreak
+{}          %  Thm head spec (can be left empty, meaning `normal')
+
+\newtheoremstyle{algorithmstyle}
+{10pt}      %  Space above
+{5pt}       %  Space below
+{}  %  Body font
+{}          %  Indent amount (empty = no indent, \parindent = para indent)
+{\bfseries} %  Thm head font
+{}         %  Punctuation after thm head
+{ }      %  Space after thm head: " " = normal interword space;
+% \newline = linebreak
+{}          %  Thm head spec (can be left empty, meaning `normal')
+
+\newtheoremstyle{examplestyle}
+{10pt}      %  Space above
+{5pt}       %  Space below
+{}          %  Body font
+{}          %  Indent amount (empty = no indent, \parindent = para indent)
+{\bfseries} %  Thm head font
+{}         %  Punctuation after thm head
+{ }      %  Space after thm head: " " = normal interword space;
+% \newline = linebreak
+{}          %  Thm head spec (can be left empty, meaning `normal')
+
+\makeatletter
+\newtheorem*{rep@theorem}{\rep@title}
+\newcommand{\newreptheorem}[2]{%
+\newenvironment{rep#1}[1]{%
+ \def\rep@title{#2 \ref{##1}}%
+ \begin{rep@theorem}}%
+ {\end{rep@theorem}}}
+\makeatother
+
+\makeatletter % subalign = substack + align
+\newcommand{\subalign}[1]{%
+  \vcenter{%
+    \Let@ \restore@math@cr \default@tag
+    \baselineskip\fontdimen10 \scriptfont\tw@
+    \advance\baselineskip\fontdimen12 \scriptfont\tw@
+    \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
+    \lineskiplimit\lineskip
+    \ialign{\hfil$\m@th\scriptstyle##$&$\m@th\scriptstyle{}##$\hfil\crcr
+      #1\crcr
+    }%
+  }%
+}
+\makeatother
+
+\newreptheorem{theorem}{Theorem}
+\newreptheorem{corollary}{Corollary}
+\newreptheorem{proposition}{Proposition}
+
+
+
+\theoremstyle{theoremstyle}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{examplestyle}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{definitionnotation}[theorem]{Definition and Notation}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem*{notation*}{Notation}
+\newtheorem{recollection}[theorem]{Recollection}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{convention}[theorem]{Convention}
+\newtheorem{construction}[theorem]{Construction}
+\newtheorem{timings}[theorem]{Timings}
+\theoremstyle{algorithmstyle}
+\newtheorem{algorithm}[theorem]{Algorithm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% End Theorem Section  %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Begin Newcommand Section  %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\TT}{\mathbb{T}}
+\newcommand{\suchthat}{\;\ifnum\currentgrouptype=16 \middle\fi|\;}
+\newcommand{\bigmid}{\left.\vphantom{\Big\{} \suchthat \vphantom{\Big\}}\right.}
+\newcommand{\bigslant}[2]{{\raisebox{.2em}{$#1$}\left/\raisebox{-.2em}{$#2$}\right.}}
+
+\newcommand{\lin}{{\mathrm{lin}}}
+\newcommand{\nlin}{{\mathrm{nlin}}}
+\newcommand{\start}{{\mathrm{start}}}
+\newcommand{\current}{{\mathrm{current}}}
+\newcommand{\target}{{\mathrm{target}}}
+
+
+%% Math operators:
+\DeclareMathOperator{\codim}{codim}
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\Dr}{Dr}
+\DeclareMathOperator{\minors}{minors}
+\DeclareMathOperator{\mult}{mult}
+\DeclareMathOperator{\Newt}{Newt}
+\DeclareMathOperator{\MV}{MV}
+\DeclareMathOperator{\Span}{Span}
+\DeclareMathOperator{\Supp}{Supp}
+\DeclareMathOperator{\trop}{trop}
+\DeclareMathOperator{\Trop}{Trop}
+\DeclareMathOperator{\val}{val}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% End Newcommand Section  %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setcounter{biburllcpenalty}{7000} % penalizing overlong urls in bibliography
+\setcounter{biburlucpenalty}{8000}
+\raggedbottom
+\begin{document}
+
+\title[Tropical homotopy continuation on tropical linear spaces]{Tropical homotopy continuation\\ on tropical linear spaces}
+\author{Oliver Daisey}
+\address{Department of Mathematics, Durham University, United Kingdom.}
+\email{oliver.j.daisey@durham.ac.uk}
+\urladdr{https://www.durham.ac.uk/staff/oliver-j-daisey/}
+\author{Yue Ren}
+\address{Department of Mathematics, Durham University, United Kingdom.}
+\email{yue.ren2@durham.ac.uk}
+\urladdr{https://yueren.de}
+
+\subjclass[2020]{14T10,14T90}
+
+\date{\today}
+
+\keywords{tropical geometry.}
+
+\begin{abstract}
+  lorem ipsum
+\end{abstract}
+
+\maketitle
+
+\input{introduction}
+
+\input{background}
+
+\input{example}
+
+\input{algorithm}
+
+\renewcommand*{\bibfont}{\small}
+\printbibliography
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

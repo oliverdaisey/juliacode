@@ -1,0 +1,111 @@
+\section{The algorithm}\label{sec:algorithm}
+In this section, we go over the actual algorithm. \cref{subsec:homotopyContinuation} contains the top-level algorithm, while \cref{subsec:startingSystem} describes our starting systems, and \cref{subsec:multistellarFlips} describes how the data is updated along the way.
+
+\subsection{Tropical homotopy continuation on tropical linear spaces}\label{subsec:homotopyContinuation}
+
+\begin{algorithm}\
+  \begin{algorithmic}[1]
+    \REQUIRE{$(p,f)$, where
+      \begin{enumerate}[leftmargin=*]
+      \item $p\in\TT^{\binom{n}{k}}$ a tropical Pl\"ucker vector,
+      \item $f=(f_1,\dots,f_k)\in\TT[x]^k$ a tuple of tropical polynomials.
+      \end{enumerate}
+    }
+    \ENSURE{Mixed cells dual to the stable intersection $L_p\wedge\Trop(f_1)\wedge\!\cdots\!\wedge\Trop(f_k)$.}
+    \STATE Construct starting data
+    \[ (p_\start,f_\start,\mathcal S)\coloneqq\mathtt{StartingData}(p,f). \vspace{-1em} \]
+    \STATE Construct the starting mixed cone cells $\mathcal C\coloneqq\{C_s\mid s\in\mathcal S\}$,
+    and a tropical path
+    \[ h\colon [0,\infty]\rightarrow \Dr(\Supp(p_\start))\times \TT^{\Supp(f_{\start,1})}\times\dots\times \TT^{\Supp(f_{\start,k})} \]
+    with $h(0)\sim(p_\start,f_\start)$ and $h(\infty)\sim(p,f)$, where $a\sim b$ if they induce the same subdivisions on the relevant supports.
+    \STATE Set $t=0$.
+    \WHILE{$(p,f)\notin\overline{\bigcap_{C_s\in \mathcal C}C_s}$}
+    \STATE Identify the set $\mathcal C'\subseteq\mathcal C$ of mixed cell cones who are first breached by $h|_{[t,\infty]}$.
+    \STATE Update $\mathcal C$ with the adjacent mixed cell cones:
+    \[ \mathcal C\coloneqq \mathcal C\setminus \mathcal C' \cup \bigcup_{C_s\in\mathcal C'} \mathtt{MultistellarFlip}(C_s,h|_{[t,\infty]}). \]
+    \STATE Pick any $t\in h([t,\infty])\cap \bigcap_{C_s\in \mathcal C}C_s$.
+    \ENDWHILE
+    \RETURN{$\{s\mid C_s\in \mathcal C\}$.}
+  \end{algorithmic}
+\end{algorithm}
+
+\subsection{Starting system for total degree homotopies}\label{subsec:startingSystem}
+
+\begin{algorithm}[total degree starting data]\
+  \begin{algorithmic}[1]
+    \REQUIRE{$(p,f)$, where
+      \begin{enumerate}[leftmargin=*]
+      \item $p\in\TT^{\binom{n+1}{k+1}}$ a tropical Pl\"ucker vector,
+      \item $f=(f_1,\dots,f_k)\in\TT[x]^k$ a tuple of homogeneous tropical polynomials.
+      \end{enumerate}
+    }
+    \ENSURE{$(p_\start,f_\start,\mathcal S)$ starting data for tropical homotopies, i.e.,
+      \begin{enumerate}
+      \item $p_\start\in\TT^{\binom{n+1}{k+1}}$ tropical Pl\"ucker vector with $\Supp(p)\subseteq \Supp(p_\start)$,
+      \item $f_\start=(f_{\start,1},\dots,f_{\start,k})\in\TT[x^\pm]^k$ with $\Supp(f_i)\subseteq\Supp(f_{\start,i})$,
+      \item $\mathcal S\subseteq\Delta(f_{p_\start}\odot f_{\start,1}\odot\cdots\odot f_{\start,k})$ mixed cells dual to the transverse stable intersection  $L_{p_\start}\wedge\Trop(f_{\start,1})\wedge\cdots\wedge\Trop(f_{\start,k})$.
+      \end{enumerate}
+    }
+    \STATE Set $p_\start\coloneqq 0 \in\TT^{\binom{n+1}{k+1}}$.
+    \STATE Let $\ell_1,\dots \ell_k\in\TT[x^\pm]$ be of the form
+    \begin{equation*}
+      \ell_i \coloneqq \bigoplus_{j=0}^n (-c_{i,j})\odot x_j \qquad\text{where } c_{i,j}=
+      \begin{cases}
+        -1 & \text{if }j>k,\\
+        +1 & \text{if }j=i,\\
+        0 & \text{otherwise}.
+      \end{cases}
+    \end{equation*}
+    \STATE Set $f_\start\coloneqq(f_{\start,1},\dots,f_{\start,k})$ with $f_{\start,i}=(\ell_i)^{d_i}$ where $d_i \coloneqq \deg(f_i)$.
+    \STATE Set $\mathcal S\coloneqq\{ \sigma_p+\sigma_1+\dots+\sigma_k \}$ where $\sigma_p=\conv(e_0,e_{k+1}, \dots, e_{n})$ and $\sigma_i=d_i\cdot\conv(e_0, e_i)$.
+    \RETURN{$(p_\start,f_\start,\mathcal S)$.}
+  \end{algorithmic}
+\end{algorithm}
+\begin{proof}
+  By construction, we have $\Supp(p)\subseteq \Supp(p_\start)$ and $\Supp(f_i)\subseteq\Supp(f_{\start,i})$. It remains to be shown that $\sigma_p+\sigma_1+\dots+\sigma_k$ is the only mixed cell,
+
+  First, we show that the point $w\coloneqq \sum_{i=1}^ke_i\in\RR^{n+1}$ is contained in the intersection $|L_{p_\start}|\cap|\Trop(f_{\start,1})|\cap\cdots\cap|\Trop(f_{\start,k})|$, which coincides with the intersection $|L_{p_\start}|\cap|\Trop(\ell_{1})|\cap\cdots\cap|\Trop(\ell_{k})|$.  Note that $L_{p_\start}$ is the Bergman fan of the uniform matroid of rank $k+1$ and that $\Trop(\ell_i)$ is the standard tropical hyperplane translated by $c_i$, i.e.,
+  \begin{align*}
+    L_{p_\start} &\supseteq \Big\{ \underbrace{\sum_{i\in I}\RR_{\geq 0} \cdot e_i + \RR \cdot (1, \dots, 1) }_{\eqqcolon\tau_I}\bigmid I\in\textstyle\binom{[n+1]}{k} \Big\}\quad \text{and}\\
+    \Trop(\ell_{i})&\supseteq \Big\{ \underbrace{c_i+\sum_{k\neq j_1,j_2} \RR_{\geq 0} \cdot e_k + \RR \cdot (1, \dots, 1)}_{\eqqcolon\tau_{i,j_1j_2}} \mid \{j_1,j_2\}\in \binom{[n+1]}{2} \Big\}.
+  \end{align*}
+  In particular, $w=\sum_{i=0}^ke_i\in\Relint(\tau_{\{0\dots k\}})$ and $w=c_i+\sum_{j\neq i}e_i\in\Relint(\tau_{i,i})$.  Hence $w \in |L_{p_\start}|\cap|\Trop(\ell_{1})|\cap\cdots\cap|\Trop(\ell_{k})|$.  Moreover, $w$ lies in the interior of the maximal polyhedra of the intersects.
+
+  Next, we show that $w$ is the only point in the intersection.  As all intersects are tropical linear spaces, it suffices to show that the $L_{p_\start}$ and the $\Trop(\ell_i)$ intersect transversally around $w$.  This can be seen from the normal vectors of the maximal cells that contain $w$:
+  \begin{align*}
+    \Span(\tau_{\{1\dots k\}}) &= \Span(e_0-e_{k+1},\dots,e_0-e_{n})^\perp \quad\text{and}\\
+    \Span(\tau_{i,i}-c_i) &= \Span(e_0-e_i)^\perp \text{ for }i=1,\dots,k.
+  \end{align*}
+  The fact that that all normals are linearly independent shows that the intersection is transversal.
+
+  The fact that $\sigma_p+\sigma_1+\dots+\sigma_k$ is the only mixed cell now follows from the fact that $\sigma_p$ is dual to $\tau_{\{1\dots k\}}$ and that $\sigma_i$ is dual to $\tau_{i,i}$.
+\end{proof}
+
+% \subsection{Homotopy paths for linearly realisable targets}
+% \begin{algorithm}\
+%   \label{alg:homotopy paths}
+%   \begin{algorithmic}[1]
+%     \REQUIRE{$(A_\start,A_\target)$, where $A_\start,A_\target\in K^{(k+1)\times (n+1)}$ for a field $K$ with valuation $\val\colon K\rightarrow\TT$ such that
+%       \begin{enumerate}
+%       \item $\val(\minors_{(k+1)\times(k+1)}(A_\start))=p_\start$ and
+%       \item $\val(\minors_{(k+1)\times(k+1)}(A_\target))=p_\target$.
+%       \end{enumerate}
+%     }
+%     \ENSURE{$h_p\in\TT[t]^{\binom{n+1}{k+1}}$ a tropical path such that $h_p([0,\infty])\in\Dr(\Supp(p_\start))$ with
+%       \begin{enumerate}
+%       \item $h_p(0)\sim p_\start$ and
+%       \item $h_p(\infty)\sim p_\target$.
+%       \end{enumerate}
+%     }
+%     \STATE Set $h_p(s)\coloneqq \trop(\minors_{(k+1)\times(k+1)}(s\cdot A_\start + A_\target))\in\TT[s]^{\binom{n+1}{k+1}}$, where $\trop(\cdot)$ denotes coordinate-wise tropicalization of polynomials in $K[s]$ to polynomials in $\TT[s]$ by applying coefficient-wise $\val(\cdot)$.
+%     \STATE Compute the minimum of all tropical roots of the entries of $h_p$, i.e., compute $s_0\coloneqq \bigoplus_{i=1,\dots,\binom{n+1}{k+1}} \bigoplus_{r\in V(h_{p,i})} r$, where $V(\cdot)$ stands for the tropical roots of a tropical polynomial.
+%     \RETURN{$h_p(s/s_0)$.}
+%   \end{algorithmic}
+% \end{algorithm}
+
+\subsection{Multistellar flips}\label{subsec:multistellarFlips}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

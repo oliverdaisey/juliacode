@@ -1,0 +1,90 @@
+\section{Background}
+In this section, we will fix some notation by briefly going over some basic concepts in tropical geometry that are of immediate interest to us. These are
+\begin{enumerate}
+\item tropical hypersurfaces and Newton subdivisions \cite[\S 3.1]{MaclaganSturmfels2015} \cite[\S 1]{Joswig2021},
+\item tropical linear spaces and Matroid subdivisions \cite[\S 4.4]{MaclaganSturmfels2015} \cite[\S 10]{Joswig2021},
+\item stable intersections and mixed cells \cite[\S 3.6+4.6]{MaclaganSturmfels2015}.
+\end{enumerate}
+
+For the sake of simplicity, and unlike \cite{MaclaganSturmfels2015,Joswig2021}, we will consider tropical varieties as balanced polyhedral complexes rather than supports thereof.  This is because the multiplicity plays a major role in our paper and not having to keep track of separate multiplicity functions streamlines the notation. For the sake of brevity, we will moreover introduce all tropical varieties via their dual pictures as it is the main description we will be working with.
+
+\begin{convention}
+  For the remainder of the article, let $\TT\coloneqq(\RR\cup\{\infty\},\oplus,\odot)$ denote the min-plus tropical semiring and fix a multivariate (Laurent) polynomial ring $\TT[x^\pm]\coloneqq \TT[x_1^\pm,\dots,x_n^\pm]$.
+\end{convention}
+
+\subsection{Tropical hypersurfaces}
+
+\begin{definition}
+  Let $f=\sum_{\alpha\in\ZZ^n}c_\alpha x^\alpha\in\TT[x^\pm]$ be a tropical Laurent polynomial.\linebreak  The \emph{support} of $f$ is the set of all exponent vectors with tropically non-zero coefficient, i.e., $\mathrm{Supp}(f)\coloneqq\{\alpha\in\ZZ^n\mid c_\alpha\neq \infty\}$.  The \emph{Newton polytope} of $f$ is the convex hull of its support, and the \emph{Newton subdivision} $\Delta(f)$ is the regular subdivision on $\Supp(f)$ induced by the coefficients.
+
+  For the sake of simplicity, we will not distinguish between tropical coefficient vectors $f'=(c_\alpha)_{\alpha\in\Supp(f)}\in \TT^{\Supp(f)}$ and tropical Laurent polynomials $f'=\sum_{\alpha\in\Supp(f)}c_\alpha x^\alpha\in\TT[x^\pm]$ with $\Supp(f')\subseteq\Supp(f)$.
+\end{definition}
+
+\begin{definition}
+  Let $f=\sum_{\alpha\in\ZZ^n}c_\alpha x^\alpha\in\TT[x^\pm]$ be a tropical Laurent polynomial. Each cell of the Newton subdivision $\delta\in\Delta(f)$ defines a dual polyhedron as follows:
+  \[ C_\delta(f)\coloneqq \{ w\in\RR^n\mid \text{the minimum in } f(w) \text{ is attained at the vertices of } \delta \}. \]
+  The \emph{tropical hypersurface} of $f$ is the set of all such dual polyhedra arising from positive-dimensional cells of the Newton subdivision,
+  \[ \Trop(f)\coloneqq \{C_\delta(f)\mid \delta\in\Delta(f), \dim(\delta)>0 \}. \]
+  Moreover, maximal $C_\delta(f)\in\Trop(f)$ are dual to one-dimensional $\delta\in\Delta(f)$.  The multiplicity of each maximal $C_\delta(f)\in\Trop(f)$ is the lattice length of $\delta$.
+\end{definition}
+
+\begin{example}
+
+\end{example}
+
+\subsection{Tropical linear spaces}
+
+\begin{definition}
+  Let $k,n\in\ZZ_{\geq 0}$, $k\leq n$.  A \emph{tropical Pl\"ucker vector} is a point $p\in \TT^{\binom{k}{n}}$ such that for all $\sigma\in\binom{[n]}{k-1}$ and $\tau\in\binom{[n]}{k+1}$ with $\sigma\subseteq\tau$ the following minimum is attained at least twice:
+  \[ \bigoplus_{i\in\tau} p_{\sigma\cup\{i\}}\odot p_{\tau\setminus\{i\}}. \]
+  The \emph{support} of a tropical Pl\"ucker vector $p$ are the indices of its tropically non-zero entries, i.e., $\Supp(p)\coloneqq\{ B\in S\mid p_B\neq\infty\}$. The \emph{Dressian} $\Dr(\Supp(p))$ is the set of tropical Pl\"ucker vector with support $\Supp(p)$.
+
+
+  To each tropical Pl\"ucker vector $p$ we can assign a tropical Laurent polynomial $f_p\coloneqq \bigoplus_{B\in \Supp(p)} p_B\odot x^{e_B}\in\TT[x^\pm]$, where $e_B\in\{0,1\}^n$ is the indicator vector of $B$.  The \emph{matroid polytope} of $p$ is the Newton polytope of $f_p$, and the \emph{matroid subdivision} of $p$ is the Newton subdivision $\Delta(f_p)$.
+
+\end{definition}
+
+\begin{definition}
+  A cell of the matroid subdivision $\delta\in\Delta(f_p)$ is \emph{loopless} if $\bigcup_{e_B\in\delta}B=[n]$, and each cell defines a dual polyhedron as follows:
+  \[ C_\delta(f_p)\coloneqq \{ w\in\RR^n\mid \text{the minimum in } f_p(w) \text{ is attained at the vertices of } \delta \}. \]
+  The \emph{tropical linear space} of $p$ is the set of all such dual polyhedra arising from loopless cells of the Matroid subdivision,
+  \[ L_p\coloneqq \{C_\delta(f_p)\mid \delta\in\Delta(f_p), \delta \text{ loopless} \}. \]
+  Each maximal cell $C_\delta(f)\in L_p$ has weight $1$.
+\end{definition}
+
+\begin{example}
+
+\end{example}
+
+\subsection{Stable intersections}
+
+\begin{definition}
+  Define stable intersection two ways:
+  \begin{enumerate}
+  \item Without perturbation
+  \item With perturbation
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}
+  (Generalised) mixed cells and mixed cell candidates
+  \begin{enumerate}
+      \item A mixed cell candidate is $s=(s_p,s_1,\dots,s_k)\subseteq \Supp(f_p)\times\Supp(f_1)\times\dots\times\Supp(f_k)$ with $s_p$ loopless and $|s_i|=2$.
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}
+  Let $p\in \TT^{\binom{n}{k}}$ be a tropical Pl\"ucker vector and let $f=(f_1,\dots,f_k)\in\TT[x^\pm]^k$ be tuple of tropical polynomials.  In \cref{sec:algorithm}, these will be the starting data of our tropical homotopies.
+
+  For any mixed cell candidate $s=(s_p,s_1,\dots,s_k)\subseteq \Supp(f_p)\times\Supp(f_1)\times\dots\times\Supp(f_k)$, we define the (generalised) mixed cell cone to be
+  \begin{align*}
+    C_s\coloneqq &\Big\{ (f_p',f_1',\dots,f_n')\in \RR^{\Supp(f_p)}\times\RR^{\Supp(f_1)}\times\dots\times\RR^{\Supp(f_k)} \bigmid \\
+    &\hspace{7mm}\conv(s_p)+\conv(s_1)+\dots+\conv(s_k) \text{ is a face of }\Delta(f_p'\odot f_1'\odot\dots\odot f_k')\Big\}.
+  \end{align*}
+
+  Given a cone $C\subseteq \RR^{\Supp(f_p)}\times\RR^{\Supp(f_1)}\times\dots\times\RR^{\Supp(f_k)}$, we say a tropical point $(p',f_1',\dots,f_n')\in\TT^{\Supp(p)}\times\TT^{\Supp(f_1)}\times\dots\times\TT^{\Supp(f_k)}$ is in the closure of $C$, or $(p',f_1',\dots,f_n')\in\overline C$, if there is an unbounded path in $C$ converging to it.
+\end{definition}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

@@ -1,0 +1,28 @@
+\section{The running example}
+Run through an illustrative example involving:
+\begin{enumerate}
+\item two-codimensional tropical linear space in $\RR^4$,
+\item one (homogeneous) tropical hypersurface in $\RR^4$.
+\end{enumerate}
+
+Both polyhedral complexes are invariant under translation by $\RR\cdot(1,1,1,1)$, as will be their stable intersection.  We can thus draw three-dimensional pictures by restricting the tropical ambient space to $\RR^3\cong \{0\}\times\RR^3$ and the Newton ambient space to $\{w+x+y+z=d\}$ for a suitable $d$.
+
+\subsection*{start}
+$f_{\start} = w^2\oplus wx\oplus wy\oplus wz\oplus x^2\oplus xy\oplus xz\oplus y^2\oplus yz\oplus z^2$,
+$p_{\start} = 0\in\RR^{\binom{4}{2}}$
+
+\subsection*{target}
+$f_{\target} = x_0x_1\oplus x_0x_3\oplus (-1)\odot x_1x_3$,
+$p_{\target} = (0,0,\infty,0,0,0)\in\RR^{\binom{4}{2}}$ with $p_{\target,\{03\}}=\infty$.
+
+\subsection*{expectation}
+\begin{enumerate}
+\item $p_0$ and $f_0$ have a single mixed cell of volume $2$.
+\item Fix $p$ at $p_0$, change $f$ from $f_0$ to $f_1$: one mixed cell of volume $2$ breaks into two mixed cells of volume $1$.
+\item Change $p$ from $p_0$ to $p_1$, fix $f$ at $f_1$: one mixed cell of volume $1$ diverges.
+\end{enumerate}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
