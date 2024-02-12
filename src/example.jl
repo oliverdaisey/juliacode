@@ -1,7 +1,8 @@
 using Oscar
 using Revise
-include("bistellarflips.jl")
-include("cayleyembedding.jl")
+
+include("cayley_embedding.jl")
+include("type_aliases.jl")
 
 T = tropical_semiring()
 
@@ -37,6 +38,7 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
         end
 
         push!(linear_forms, l_i)
+        println(l_i)
 
     end
 
@@ -91,11 +93,10 @@ end
 
 n = 3
 k = 1
-R, (w, x, y, z) = T["w", "x", "y", "z"]
-f0 = w^2 + w*x + x^2 + w*y + x*y + y^2 + w*z + x*z + y*z + z^2
-variables = [w, x, y, z]
+R, (x0, x1, x2, x3) = T["x0", "x1", "x2", "x3"]
 
-p_start, f_start, S = total_degree_starting_data((f0,), variables)
+f1 = x0 + x1 + x2 + x3
+p_start, f_start, S = total_degree_starting_data(PluckerVector([[1]], [1]), (f0,))
 
 L_p = tropical_linear_space(p_start[1], T.(p_start[2]))
 

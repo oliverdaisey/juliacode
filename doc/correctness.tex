@@ -1,0 +1,131 @@
+\documentclass[12pt]{article}
+% We can write notes using the percent symbol!
+% The first line above is to announce we are beginning a document, an article in this case, and we want the default font size to be 12pt
+\usepackage[utf8]{inputenc}
+% This is a package to accept utf8 input.  I normally do not use it in my documents, but it was here by default in Overleaf.
+\usepackage[toc]{appendix}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}{Corollary}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{example}{Example}
+\newtheorem*{rem}{Remark}
+
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\cl}{\text{cl}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\conv}{\text{conv}}
+\newcommand{\Trop}{\text{Trop}}
+% These three packages are from the American Mathematical Society and includes all of the important symbols and operations 
+\usepackage{fullpage}
+\setcounter{tocdepth}{1}
+% By default, an article has some vary large margins to fit the smaller page format.  This allows us to use more standard margins.
+
+\setlength{\parskip}{1em}
+% This gives us a full line break when we write a new paragraph
+
+\begin{document}
+% Once we have all of our packages and setting announced, we need to begin our document.  You will notice that at the end of the writing there is an end document statements.  Many options use this begin and end syntax.
+
+\begin{center}
+    \Large Tropical Linear Spaces \\
+    \vspace{5mm}
+    \small Oliver Daisey
+\end{center}
+
+\section{Matroids}	
+Matroids are abstractions of the theory of linear independence of vectors. One can define matroids in many equivalent ways. Here we provide the definition in terms of bases, as it is most convenient. Other definitions are in terms of independent sets and dependent sets.
+
+\begin{defn}
+Given a set $E$, a matroid $\M = (E, \B)$ consists of $E$ together with a collection of subsets $\B$ of $E$, called \textit{bases}. with the following properties:
+\begin{enumerate}
+	\item $\B$ is nonempty,
+	\item (Basis exchange property) for any $B,B' \in \B$ with $\alpha \in B, \alpha \notin B'$, there exists $\beta \in B', \beta \notin B$ such that $(B \setminus \{\alpha\}) \cup \{ \beta \} \in \B$.
+\end{enumerate}
+
+\end{defn}
+It follows from this definition that all bases have the same cardinality, which we call the \textit{rank} of $\M$. Any subset of a basis is called an \textit{independent set}. Bases are the maximal independent sets.
+\begin{defn}
+	A \textit{circuit} $C$ of a matroid is a minimal dependent set. These are characterised by \[ C_e = B_e \cup \{ e \} \]
+	for some $e \in E$ and $B_e \in \B$ depending on $e$.
+\end{defn}
+To any subset $A$ of $E$, we may define a submatroid by taking the independent sets that lie inside $A$. Then the \textit{rank} $\text{rk}(A)$ of $A$ is the rank of this matroid over $A$.
+\begin{defn}
+	The \textit{closure} of a subset $A$ of $E$ is the set
+	\[ \cl(A) = \left\{ x \in E \mid \text{rk}(A) = \text{rk}\left(A \cup \{e\}\right) \right\}. \]
+	A set $A \subset E$ satisfying $A = \cl(A)$ is said to be a \textit{flat} of $\M$. These are the maximal sets with respect to rank. Adding any other element to such an $A$ would increase the rank.
+\end{defn}
+\begin{example}
+There are several examples of matroids that pop up naturally.
+\begin{enumerate}
+	\item The \textit{free matroid} on any finite set $E$ just declares $E$ as the only basis. There are no circuits. Every subset of $E$ is independent.
+	\item The \textit{uniform matroid} $U_{k,n}$ has ground set $E = [n] = \{1, 2, \dots, n\}$ and bases $\B = \binom{[n]}{k}$.
+	\item The independent subsets of a (finite) subset of a vector space $V$ form a matroid. Any matroid $\M$ that can be represented in this way with a finite vector space over a field $F$ is called \textit{representable} over $F$.
+\end{enumerate}
+\end{example}
+\begin{defn}
+	The \textit{matroid polytope} $\Delta_\M \subset \R^{|E|}$ is the convex hull of the indicator vectors of $\M$. More precisely,
+	\[ \Delta_M = \conv\left(\{e_B \mid B \in \B\}\right) \]
+	where $e_B = \sum \delta_i e_i$ with $\delta_i = 1$ if $i \in B$, $i = 0$ otherwise.
+\end{defn}
+\begin{example}
+For the uniform matroid $U_{2,4}$ one has 
+\[ \Delta_M = \conv \left( \left\{ (1,1,0,0), (1,0,1,0),(1,0,0,1),(0,1,1,0),(0,1,0,1),(0,0,1,1) \right\} \right). \]
+This is an octahedron embedded in $\R^4$. By intersecting with the hyperplane $x_1+x_2+x_3+x_4=2$, we can draw it in $\R^3$.e
+\end{example}
+
+\section{Tropical Pl\"ucker Vectors}
+Let $P_J$ denote the coordinates on $\R^{\binom{n}{d}}$ indexed by the $d$-element subsets of $[n]$. Thus, for instance, $\R^{\binom{4}{2}}$ has coordinates $P_{12}, P_{13}, P_{14}, P_{23}, P_{24}, P_{34}$. 
+
+\begin{defn}
+	Suppose $(p_I) \in \R^{\binom{n}{d}}$. We say $p$ is a \textit{tropical Pl\"ucker vector} if
+\[
+(p_I) \in \Trop\left( P_{Sij}P_{Skl} - P_{Sik}P_{Sjl} + P_{Sil}P_{Sjk} \right)
+\]
+for every choice of $S \in \binom{[n]}{d-2}$ and all $i,j,k,l$ distinct members of $[n] \setminus S$. 
+\end{defn}
+
+In other words, $p$ is a tropical Pl\"ucker vector if it satisfies the 3-term tropicalised Pl\"ucker relations.
+
+\begin{defn}
+	A \textit{matroid subdivision} $\mathcal{D}$ is a regular subdivision induced by a height vector $p_I$ on the vertices of the matroid polytope $\Delta(U_{d,n})$. A subpolytope of a matroid subdivision is said to be \textit{matroidal} if its vertices (considered as elements of $\binom{[n]}{d}$) satisfy the basis exchange axiom.
+\end{defn}
+The following lemma is proved in Speyer's paper on tropical linear spaces.
+\begin{lem}
+	The following are equivalent:
+	\begin{enumerate}
+		\item $p_I$ is a tropical Pl\"ucker vector.
+		\item The one-skeleta of $\mathcal{D}$ and $\Delta(U_{d,n})$ are the same.
+		\item Every cell of $\mathcal{D}$ is matroidal.
+	\end{enumerate}
+\end{lem}
+For any $w \in \R^n$, let $\mathcal{D}_w$ be the set of vertices of the matroid subdivision $\mathcal{D}$ at which $p_{i_1\dots i_d} - \sum_{k=1}^{d} w_{i_k}$ is minimal. Since this is a face of $\Delta(U_{d,n})$ and $p$ is a tropical Pl\"ucker vector, the vertices in $\mathcal{D}_w$ form a matroid.
+\begin{thm}
+	$w \in L(p)$ if and only if the matroid associated to $\mathcal{D}_w$ is loopless.
+\end{thm}
+Thus, tropical linear spaces may be understood from matroids.
+\begin{example}
+	Let us continue examining the $n=4,d=2$ case. Consider the tropical Pl\"ucker vector consisting of all zeroes. Then the matroid subdivision $\mathcal{D}$ is trivial. The loopless facets correspond to the subsets
+	\begin{align*}
+		&F_1 := \{1,2\}, \{1,3\}, \{1,4\}, \\
+		&F_2 := \{1,2\},\{2,3\},\{2,4\}, \\
+		&F_3 := \{1,3\},\{2,3\},\{3,4\}, \\
+		&F_4 := \{1,4\},\{2,4\},\{3,4\}.
+	\end{align*}
+The tropical linear space is supported on the set of $w \in \R^{\binom{n}{d}}$ such that the inner product $\langle e_I, w \rangle$, taken over all matroid polytope vertices $e_I$, is maximised at the vertices of these facets. We see for instance that in the first case we need $w_{12}=w_{13}=w_{14}>$ all other components. Therefore the corresponding polyhedron in $L(p)$ is
+\[
+C_{F_1} = \left\{ \sum_{I \in F_1} \R_{\geq 0}\cdot e_I + \R(1,\dots,1) \right\}
+\]
+\end{example}
+\end{document}
