@@ -1,0 +1,67 @@
+#+title: brainstorm document for code structure
+
+* Types
+NOTE:
+- all types min only for now, return error when max
+- code should be type-agnostic modulo missing functions in OSCAR
+
+** TropicalPlueckerVector{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{Vector{Int}}: pluecker vector indices
+- Vector{TropicalSemiringElem{minOrMax}}: pluecker vector coordinates
+
+** DualCell{cellType,minOrMax}
+Parameters:
+- cellType distinguishes between
+  . tropical hypersurfaces
+  . tropical linear spaces
+  . inverted linear spaces
+- minOrMax distinguishes between min and max convention
+Content:
+- ambient support (from hypersurface, linear space, inverted linear space)
+- ambient height (from hypersurface, linear space, inverted linear space)
+- active support
+
+** MixedCell{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{DualCell}: dual cells of complementary dimension
+
+** DualHeightPath{pathType,minOrMax}
+Parameters:
+- pathType distinguishes between
+  . straight line
+  . bent line (potentially for paths in the Dressian)
+- minOrMax distinguishes between min and max convention
+Content:
+- starting heights
+- target heights
+- tiebreakers
+Note:
+deterministic tiebreaker needs to be baked in to ensure consistency amongst paths
+
+** MixedHeightPath{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{DualHeightPath}: dual height paths of complementary dimension
+
+** MixedCellTracker{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- MixedCell
+- DualHeightPath
+- current time
+
+* Functions
+
+** total_degree_starting_data(::TropicalLinearSpace,::Vector{TropicalHypersurfaces}; perturb_generically::Bool=false)
+Input: self-explanatory
+- if perturb_generically==true, do a generic perturbation to ensure transverse intersection
+Output:
+- Vector{MixedCell}: starting mixed cells
+- DualHeightPath
