@@ -14,14 +14,13 @@ Content:
 
 ** DualCell{cellType,minOrMax}
 Parameters:
-- cellType distinguishes between
+- cellType distinguishes between (Question: is this necessary?)
   . tropical hypersurfaces
   . tropical linear spaces
   . inverted linear spaces
 - minOrMax distinguishes between min and max convention
 Content:
 - ambient support (from hypersurface, linear space, inverted linear space)
-- ambient height (from hypersurface, linear space, inverted linear space)
 - active support
 
 ** MixedCell{minOrMax}
@@ -36,26 +35,27 @@ Parameters:
   . straight line
   . bent line (potentially for paths in the Dressian)
 - minOrMax distinguishes between min and max convention
-Content:
-- starting heights
-- target heights
-- tiebreakers
+Content: depends on type
+Must-have feature:
+- Given dual cell and path, time until flip and direction of flip
 Note:
 deterministic tiebreaker needs to be baked in to ensure consistency amongst paths
 
-** MixedHeightPath{minOrMax}
-Parameters:
-- minOrMax distinguishes between min and max convention
-Content:
-- Vector{DualHeightPath}: dual height paths of complementary dimension
 
-** MixedCellTracker{minOrMax}
+** DualCellTracker{minOrMax}
 Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
-- MixedCell
+- DualCell
 - DualHeightPath
-- current time
+- time of next flip (for optimisation purposes)
+- facet to flip over
+
+** MixedCellTracker{minOrMax} = vertex of our mixed cell tree
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{DualCellTracker}
 
 * Functions
 
@@ -65,3 +65,26 @@ Input: self-explanatory
 Output:
 - Vector{MixedCell}: starting mixed cells
 - DualHeightPath
+
+** dual_cell_flip
+Input:
+- DualCellTracker
+Output:
+- Vector{DualCellTracker} with higher time until next flip
+
+** mixed_cell_flip
+Input:
+- MixedCellTracker (= vertex in mixed cell tree)
+Output:
+- Vector{MixedCellTracker} (= children in the mixed cell tree)
+Note:
+- merely calls dual_cell_flip
+
+
+* Deprecated
+
+** MixedHeightPath{minOrMax} (unnecessary)
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{DualHeightPath}: dual height paths of complementary dimension
