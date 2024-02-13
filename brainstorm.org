@@ -29,33 +29,30 @@ Parameters:
 Content:
 - Vector{DualCell}: dual cells of complementary dimension
 
-** DualHeightPath{pathType,minOrMax}
+** DualPath{pathType,minOrMax}
 Parameters:
 - pathType distinguishes between
   . straight line
   . bent line (potentially for paths in the Dressian)
 - minOrMax distinguishes between min and max convention
 Content: depends on type
-Must-have feature:
-- Given dual cell and path, time until flip and direction of flip
 Note:
 deterministic tiebreaker needs to be baked in to ensure consistency amongst paths
 
-
-** DualCellTracker{minOrMax}
+** MixedPath{minOrMax}
 Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
-- DualCell
-- DualHeightPath
-- time of next flip (for optimisation purposes)
-- facet to flip over
+- Vector{DualPath}: dual height paths of complementary dimension
+Must-have feature:
+- Given mixed cell and path, time until flip and direction of flip
 
 ** MixedCellTracker{minOrMax} = vertex of our mixed cell tree
 Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
-- Vector{DualCellTracker}
+- MixedCell
+- MixedPath
 
 * Functions
 
@@ -64,7 +61,7 @@ Input: self-explanatory
 - if perturb_generically==true, do a generic perturbation to ensure transverse intersection
 Output:
 - Vector{MixedCell}: starting mixed cells
-- DualHeightPath
+- DualPath
 
 ** dual_cell_flip
 Input:
@@ -83,8 +80,11 @@ Note:
 
 * Deprecated
 
-** MixedHeightPath{minOrMax} (unnecessary)
+** DualCellTracker{minOrMax}
 Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
-- Vector{DualHeightPath}: dual height paths of complementary dimension
+- DualCell
+- DualPath
+- time of next flip (for optimisation purposes)
+- facet to flip over
