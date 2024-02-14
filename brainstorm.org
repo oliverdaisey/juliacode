@@ -1,0 +1,90 @@
+#+title: brainstorm document for code structure
+
+* Types
+NOTE:
+- all types min only for now, return error when max
+- code should be type-agnostic modulo missing functions in OSCAR
+
+** TropicalPlueckerVector{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{Vector{Int}}: pluecker vector indices
+- Vector{TropicalSemiringElem{minOrMax}}: pluecker vector coordinates
+
+** DualCell{cellType,minOrMax}
+Parameters:
+- cellType distinguishes between (Question: is this necessary?)
+  . tropical hypersurfaces
+  . tropical linear spaces
+  . inverted linear spaces
+- minOrMax distinguishes between min and max convention
+Content:
+- ambient support (from hypersurface, linear space, inverted linear space)
+- active support
+
+** MixedCell{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{DualCell}: dual cells of complementary dimension
+
+** DualPath{pathType,minOrMax}
+Parameters:
+- pathType distinguishes between
+  . straight line
+  . bent line (potentially for paths in the Dressian)
+- minOrMax distinguishes between min and max convention
+Content: depends on type
+Note:
+deterministic tiebreaker needs to be baked in to ensure consistency amongst paths
+
+** MixedPath{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- Vector{DualPath}: dual height paths of complementary dimension
+Must-have feature:
+- Given mixed cell and path, time until flip and direction of flip
+
+** MixedCellTracker{minOrMax} = vertex of our mixed cell tree
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- MixedCell
+- MixedPath
+
+* Functions
+
+** total_degree_starting_data(::TropicalLinearSpace,::Vector{TropicalHypersurfaces}; perturb_generically::Bool=false)
+Input: self-explanatory
+- if perturb_generically==true, do a generic perturbation to ensure transverse intersection
+Output:
+- Vector{MixedCell}: starting mixed cells
+- DualPath
+
+** dual_cell_flip
+Input:
+- DualCellTracker
+Output:
+- Vector{DualCellTracker} with higher time until next flip
+
+** mixed_cell_flip
+Input:
+- MixedCellTracker (= vertex in mixed cell tree)
+Output:
+- Vector{MixedCellTracker} (= children in the mixed cell tree)
+Note:
+- merely calls dual_cell_flip
+
+
+* Deprecated
+
+** DualCellTracker{minOrMax}
+Parameters:
+- minOrMax distinguishes between min and max convention
+Content:
+- DualCell
+- DualPath
+- time of next flip (for optimisation purposes)
+- facet to flip over
