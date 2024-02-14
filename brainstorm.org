@@ -44,6 +44,7 @@ Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
 - Vector{DualPath}: dual height paths of complementary dimension
+- Vector{QQFieldElem}: times along the individual paths
 Must-have feature:
 - Given mixed cell and path, time until flip and direction of flip
 
