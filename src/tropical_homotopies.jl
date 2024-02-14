@@ -1,5 +1,5 @@
 using Oscar
-include("cayleyembedding.jl")
+include("cayley_embedding.jl")
 
 """
 Given a matrix of exponent vectors and coefficient vector ω, returns the polyhedral lift of A induced by ω.

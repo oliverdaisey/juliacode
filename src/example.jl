@@ -16,15 +16,15 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
 
     # compute plueker indices
     pluecker_indices = subsets(collect(1:(n+1)), k+1)
-    pluecker_vector = [0 for i in 1:length(pluecker_indices)]
+    pluecker_vector = [T(0) for i in 1:length(pluecker_indices)]
     p_start = PluckerVector(pluecker_indices, pluecker_vector)
 
 
     # step 2: compute linear forms
-    linear_forms = Vector{TropicalPoly}()
+    F_start = Vector{TropicalPoly}()
     for i in 1:k
         
-        l_i = T(0)
+        l_i = zero(T)
         # compute coefficients
         c::Vector{Oscar.TropicalSemiringElem{typeof(min)}} = [T.(0) for j in 0:n]
         for j in 0:n
@@ -37,7 +37,7 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
             l_i += c[j+1] * variables[j+1]
         end
 
-        push!(linear_forms, l_i)
+        push!(F_start, l_i)
         println(l_i)
 
     end
@@ -45,7 +45,7 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
     # step 3: raise linear forms to appropriate powers
     deg = [get_degree(F[i]) for i in 1:k]
     for i in 1:k
-        linear_forms[i] = linear_forms[i]^deg[i] # sometimes you will get a "characteristic not known" error
+        F_start[i] = F_start[i]^deg[i] # sometimes you will get a "characteristic not known" error
     end
 
     # step 4: compute mixed cell
@@ -72,7 +72,7 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
     σ_p = convex_hull(M)
     S = sum(σ_i for σ_i in Σ) + σ_p
     
-    return (p_start, linear_forms, S)
+    return (p_start, F_start, S)
 
 end
 
@@ -95,8 +95,13 @@ n = 3
 k = 1
 R, (x0, x1, x2, x3) = T["x0", "x1", "x2", "x3"]
 
-f1 = x0 + x1 + x2 + x3
-p_start, f_start, S = total_degree_starting_data(PluckerVector([[1]], [1]), (f0,))
+# compute plueker indices
+pluecker_indices = subsets(collect(1:(n+1)), k+1)
+pluecker_vector = [0 for i in 1:length(pluecker_indices)]
+pluecker_indices = subsets(collect(1:(n+1)), k+1)
+pluecker_vector = elem_type(T)[T(0), T(0), zero(T), T(0), T(0), T(0)]
+p_start = PluckerVector(pluecker_indices, pluecker_vector)
 
-L_p = tropical_linear_space(p_start[1], T.(p_start[2]))
+f_start = x0*x1 + x0*x3 + T(-1)*x1*x3
 
+p_start, F_start, S = total_degree_starting_data(p_start, (f_start,))
