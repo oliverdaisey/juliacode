@@ -34,7 +34,9 @@ all paths are assumed to consists of line segments and linear between nodes
 Must-have features:
 - next node(s) (given current time)
 - current direction (given current time)
-Content: depends on type
+Content:
+- Vector{Vector{TropicalSemiringElem}} - a sequence of nodes between which it is assumed to be linear
+- tiebreaker
 Note:
 deterministic tiebreaker needs to be baked in to ensure consistency amongst paths
 
@@ -42,10 +44,11 @@ deterministic tiebreaker needs to be baked in to ensure consistency amongst path
 Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
-- Vector{DualPath}: dual height paths of complementary dimension
-- Vector{QQFieldElem}: times along the individual paths
-Must-have feature:
-- Given mixed cell and path, time until flip and direction of flip
+- Vector{Vector{TropicalSemiringElem}} - a sqeuence of nodes between which the path is linear
+- Vector{tiebreaker}
+Note:
+- merged together from individual DualPaths
+- remove nodes as they are crossed
 
 ** MixedCellTracker{minOrMax} = vertex of our mixed cell tree
 Parameters:
