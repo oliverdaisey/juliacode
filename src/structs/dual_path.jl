@@ -1,0 +1,3 @@
+abstract struct DualPath
+
+end

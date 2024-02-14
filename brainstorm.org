@@ -30,11 +30,10 @@ Content:
 - Vector{DualCell}: dual cells of complementary dimension
 
 ** DualPath{pathType,minOrMax}
-Parameters:
-- pathType distinguishes between
-  . straight line
-  . bent line (potentially for paths in the Dressian)
-- minOrMax distinguishes between min and max convention
+all paths are assumed to consists of line segments and linear between nodes
+Must-have features:
+- next node(s) (given current time)
+- current direction (given current time)
 Content: depends on type
 Note:
 deterministic tiebreaker needs to be baked in to ensure consistency amongst paths
@@ -78,6 +77,15 @@ Output:
 Note:
 - merely calls dual_cell_flip
 
+
+* Todo
+
+1. write codim(::DualCell)
+2. in dual_cell constructor:
+   - check that active_support makes sense (length 2 for hypersurfaces, loopless for linear and inverted linear)
+3. in mixed_cell constructor:
+   - check that dual cells are of complementary dimension
+   - check that dual cells are of the same convention (maybe use type dispatch for it?)
 
 * Deprecated
 
