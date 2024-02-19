@@ -83,12 +83,13 @@ Note:
 
 * Todo
 
-1. write codim(::DualCell)
-2. in dual_cell constructor:
-   - check that active_support makes sense (length 2 for hypersurfaces, loopless for linear and inverted linear)
-3. in mixed_cell constructor:
-   - check that dual cells are of complementary dimension
-   - check that dual cells are of the same convention (maybe use type dispatch for it?)
+1. in dual_cell constructors:
+   - remove pluecker_vector from constructors and input check
+2. implement DualCellTracker (= DualCell + vector of nodes)
+3. implement MixedCellTracker constructor from a vector of DualCellTrackers (series and parallel; nodes in MixedCellTracker = product of nodes of DualCellTrackers)
+4. implement perturbation for MixedCellTracker (always perturbs next node)
+
+
 
 * Deprecated
 
