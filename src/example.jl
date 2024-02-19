@@ -99,9 +99,9 @@ R, (x0, x1, x2, x3) = T["x0", "x1", "x2", "x3"]
 pluecker_indices = subsets(collect(1:(n+1)), k+1)
 pluecker_vector = [0 for i in 1:length(pluecker_indices)]
 pluecker_indices = subsets(collect(1:(n+1)), k+1)
-pluecker_vector = elem_type(T)[T(0), T(0), zero(T), T(0), T(0), T(0)]
-p_start = PluckerVector(pluecker_indices, pluecker_vector)
+# pluecker_vector = elem_type(T)[T(0), T(0), zero(T), T(0), T(0), T(0)]
+p_target = PluckerVector(pluecker_indices, pluecker_vector)
 
-f_start = x0*x1 + x0*x3 + T(-1)*x1*x3
+F_target = (x0*x1 + x0*x3 + T(-1)*x1*x3,)
 
-p_start, F_start, S = total_degree_starting_data(p_start, (f_start,))
+p_start, F_start, S = total_degree_starting_data(p_target, F_target)

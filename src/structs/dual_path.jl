@@ -1,3 +1,3 @@
-abstract struct DualPath
+abstract type DualPath
 
 end
