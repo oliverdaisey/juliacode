@@ -86,7 +86,15 @@ Note:
 1. in dual_cell constructors:
    - remove pluecker_vector from constructors and input check
 2. implement DualCellTracker (= DualCell + vector of nodes)
-3. implement MixedCellTracker constructor from a vector of DualCellTrackers (series and parallel; nodes in MixedCellTracker = product of nodes of DualCellTrackers)
+   Note:
+3. implement MixedCellTracker constructor from a vector of DualCellTrackers
+   - nodes in MixedCellTracker = product of nodes of DualCellTrackers
+   - construct one constructor which is capable of gluing the nodes of DualCellTrackers together in any specified Order
+   - create shortcuts for gluing nodes in series, in step and in parallel.
+     For [v1,v2,v3,v4] and [w1,w2,w3] this means
+     . in series: [v1, w1] -> ... -> [v4, w1] -> ... -> [v4, w3]
+     . in step: [v1, w1] -> [v2, w2] -> [v3, w3] -> [v4,w3] (w stops after step 3)
+     . in parallel: [v1,w1] (time 0) -> [v2,w1] (time 0.333) -> [v2,w2] (time 0.5) -> [v3,w2] (time 0.666) -> [v4,w3] (time 1)
 4. implement perturbation for MixedCellTracker (always perturbs next node)
 
 
