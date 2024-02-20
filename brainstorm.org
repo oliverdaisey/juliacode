@@ -83,9 +83,9 @@ Note:
 
 * Todo
 
-1. in dual_cell constructors:
-   - remove pluecker_vector from constructors and input check
-2. implement DualCellTracker (= DualCell + vector of nodes)
+1. ~~in dual_cell constructors:~~
+   - ~~remove pluecker_vector from constructors and input check~~
+2. ~~implement DualCellTracker (= DualCell + vector of nodes)~~
    Note:
 3. implement MixedCellTracker constructor from a vector of DualCellTrackers
    - nodes in MixedCellTracker = product of nodes of DualCellTrackers
@@ -94,7 +94,10 @@ Note:
      For [v1,v2,v3,v4] and [w1,w2,w3] this means
      . in series: [v1, w1] -> ... -> [v4, w1] -> ... -> [v4, w3]
      . in step: [v1, w1] -> [v2, w2] -> [v3, w3] -> [v4,w3] (w stops after step 3)
-     . in parallel: [v1,w1] (time 0) -> [v2,w1] (time 0.333) -> [v2,w2] (time 0.5) -> [v3,w2] (time 0.666) -> [v4,w3] (time 1)
+     . in parallel: [v1,w1] (time 0) -> [v2,w1] (time 0.333) -> [v2,w2] (time 0.5) -> [v3,w2] (time 0.666) -> [v4,w3] (time 1)  
+   - some further ideas:
+     . function to get next node in MixedCellTracker, uses Strategy type to determine how to get it
+     . saves having to store the big product of nodes
 4. implement perturbation for MixedCellTracker (always perturbs next node)
 
 

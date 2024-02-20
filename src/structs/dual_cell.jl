@@ -19,17 +19,16 @@ r"""
     Create a dual cell of the given type, using the min convention, with given ambient and active support.
 
     # Arguments
-    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell.
+    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
     - `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
     - `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
     - `::typeof(min)`: The min convention.
-    - `pluecker_vector::Union{TropicalPlueckerVector, Nothing}`: The pluecker vector of the dual cell, required for linear and inverted linear dual cells.
 
     # Returns
     A dual cell of the given type, using the min convention, with given ambient and active support.
 """
-function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol, ::typeof(min)=min, pluecker_vector::Union{TropicalPlueckerVector, Nothing}=nothing)
-    check_dual_cell_inputs(ambientSupport, activeSupport, cellType, pluecker_vector)
+function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol, ::typeof(min)=min)
+    check_dual_cell_inputs(ambientSupport, activeSupport, cellType)
     if cellType == :hypersurface
         return DualCell{DualCellHypersurface, typeof(min)}(ambientSupport, activeSupport)
     elseif cellType == :linear
@@ -47,18 +46,17 @@ r"""
     Create a dual cell of the given type, using the max convention, with given ambient and active support.
 
     # Arguments
-    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell.
+    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
     - `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
     - `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
     - `::typeof(max)`: The max convention.
-    - `pluecker_vector::Union{TropicalPlueckerVector, Nothing}`: The pluecker vector of the dual cell, required for linear and inverted linear dual cells.
 
     # Returns
     A dual cell of the given type, using the max convention, with given ambient and active support.
 """
-function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol, ::typeof(max), pluecker_vector::Union{TropicalPlueckerVector, Nothing}=nothing)
+function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol, ::typeof(max))
     error("max tropical dual cells currently unsupported")
-    check_dual_cell_inputs(ambientSupport, activeSupport, cellType, pluecker_vector)
+    check_dual_cell_inputs(ambientSupport, activeSupport, cellType)
     if cellType == :hypersurface
         return DualCell{DualCellHypersurface, typeof(max)}(ambientSupport, activeSupport)
     elseif cellType == :linear
@@ -84,16 +82,13 @@ r"""
     # Throws
     An error if the inputs are invalid.
 """
-function check_dual_cell_inputs(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol, pluecker_vector::Union{TropicalPlueckerVector, Nothing}=nothing)
+function check_dual_cell_inputs(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol)
     if cellType == :hypersurface
         @assert length(activeSupport) == 2 "active support must be a pair of indices for a hypersurface"
     elseif cellType == :linear || cellType == :inverted_linear
-        if isnothing(pluecker_vector)
-            error("pluecker vector required for linear or inverted linear dual cells")
-        end
         # check that pluecker indices indexed by active support are loopless
-        selected_indices = [pluecker_vector.pluecker_indices[i] for i in activeSupport]
-        @assert length(unique(vcat((selected_indices)...))) == rank(pluecker_vector) "pluecker indices $(selected_indices) do not form a loopless set"
+        # assert that no row of the submatrix indexed by active support is zero
+        @assert all([!iszero(v) for v in eachcol(ambientSupport[:,activeSupport]')]) "active support must be loopless"
     end
 end
 
