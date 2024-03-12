@@ -105,7 +105,7 @@ r"""
 """
 function codim(m::DualCell)
     # compute the rank of the active support
-    return rank(m.ambientSupport[:,m.activeSupport])
+    return rank(m.ambientSupport[m.activeSupport,:])-1
 end
 
 # handles printing of a dual cell
