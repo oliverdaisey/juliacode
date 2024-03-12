@@ -35,3 +35,13 @@ function mixed_path_in_series(dualPaths::Vector{<:DualPath})
 
     return MixedPath(pointers, dualPaths)
 end
+
+
+function lift_from_node_and_fraction(h::MixedPath, index::Int, t::QQFieldElem)
+
+    @assert 1 <= index <= length(h.nodes) "Index out of bounds"
+    @assert 0 <= t <= 1 "t out of bounds"
+    @assert index != length(h.nodes) && t>0 "Cannot work out lift from the last node"
+
+    return h.nodes[index] + t * (h.nodes[index+1] - h.nodes[index])
+end
