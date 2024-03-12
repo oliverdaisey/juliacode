@@ -1,6 +1,4 @@
 include("../main.jl")
-include("../routines/generate_support.jl")
-include("../routines/stable_intersection_point.jl")
 
 n=3
 k=1
@@ -32,4 +30,7 @@ s = mixed_cell([f_start_dual, p_start_dual])
 h = mixed_path_in_series([f_path, p_path])
 
 # verify that the mixed cell is correct
-stable_intersection_point(s, h, 1, QQFieldElem.(0))
+println("Stable intersection point = $(stable_intersection_point(s, h, 1, QQFieldElem.(0)))")
+
+# compute the drift
+println("Drift = $(compute_drift(s, h, 1))")
