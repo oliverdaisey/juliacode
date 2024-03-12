@@ -10,7 +10,7 @@ R, (x1, x2, x3) = T["x1", "x2", "x3"]
 f_start = x1*x2*x3 + T(3)*T(0)
 f_target = x1*x2*x3 + T(-3)*T(0)
 
-# create thea DualCell for f contributing to mixed cell
+# create the DualCell for f contributing to mixed cell
 f_start_dual = DualCell{DualCellHypersurface, typeof(min)}(generate_support(f_start), [1,2])
 # create the dual path
 f_path = DualPath{DualPathHypersurface, typeof(min)}([QQFieldElem.([0, 3]), QQFieldElem.([0, -3])])
@@ -30,7 +30,7 @@ s = mixed_cell([f_start_dual, p_start_dual])
 h = mixed_path_in_series([f_path, p_path])
 
 # verify that the mixed cell is correct
-println("Stable intersection point = $(stable_intersection_point(s, h, 1, QQFieldElem.(0)))")
+println("Tropical transverse intersection point = $(stable_intersection_point(s, h, 1, QQFieldElem.(0)))")
 
 # compute the drift
-println("Drift = $(compute_drift(s, h, 1))")
+println("Tropical drift = $(compute_drift(s, h, 1))")
