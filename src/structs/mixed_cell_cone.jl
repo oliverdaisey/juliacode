@@ -14,18 +14,6 @@ struct MixedCellCone
 
 end
 
-struct CayleyCircuit
-    # coefficients defining the corresponding facet
-    coefficients::Vector{QQFieldElem}
-
-    # indices of the columns supporting this circuit
-    support::Vector{Int}
-
-    # configuqation and column index in cayley embedding giving rise to this circuit
-    i::Int
-    gamma::Int
-end
-
 """
     mixed_cell_cone(s::GeneralizedMixedCell, M::Matrix{QQFieldElem})
 
@@ -36,15 +24,14 @@ INPUTS:
 - ``M::Matrix{QQFieldElem}``: the cayley matrix of the point configurations.
 - ``n::Int``: the dimension of the ambient space.
 """
-function mixed_cell_cone(s::GeneralizedMixedCell, M::QQMatrix)::MixedCellCone
+function mixed_cell_cone(s::MixedCell)::MixedCellCone
 
     # get all indices appearing in generalized mixed cell
-    mixed_cell_indices = reduce(vcat, s)
-    extra_indices = [i for i in 1:ncols(M) if !(i in mixed_cell_indices)]
+    extra_indices = [i for i in 1:nrows(s.ambientSupport) if !(i in s.activeSupport)]
     coefficient_vects = Vector{Vector{QQFieldElem}}()
 
     for extra_index in extra_indices
-        push!(coefficient_vects, cone_coefficients(mixed_cell_indices, extra_index, M))
+        push!(coefficient_vects, cone_coefficients(s.activeSupport, extra_index, s.ambientSupport))
     end
 
     C = MixedCellCone(coefficient_vects)

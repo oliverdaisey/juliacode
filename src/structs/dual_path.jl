@@ -9,9 +9,9 @@ struct DualPathInvertedLinear <: DualPathType end
 
 struct DualPath{pathType<:DualPathType, minOrMax<:Union{typeof(min),typeof(max)}}
 
-    nodes::Vector{Vector{QQFieldElem}}
+    nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}
 
-    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{QQFieldElem}}) where {pathType<:DualPathType, minOrMax<:Union{typeof(min),typeof(max)}}
+    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}) where {pathType<:DualPathType, minOrMax<:Union{typeof(min),typeof(max)}}
         return new{pathType, minOrMax}(nodes)
     end
 
@@ -23,8 +23,8 @@ function lift_from_node_and_fraction(h::DualPath, index::Int, t::QQFieldElem)
     @assert 0 <= t <= 1 "t out of bounds"
 
     if index >= length(h.nodes)
-        return h.nodes[index]
+        return [x.data for x in h.nodes[index]]
     end
 
-    return h.nodes[index] + t * (h.nodes[index+1] - h.nodes[index])
+    return [x.data for x in h.nodes[index]] + t * ([x.data for x in h.nodes[index]] - [x.data for x in h.nodes[index+1]])
 end
