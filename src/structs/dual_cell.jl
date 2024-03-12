@@ -105,7 +105,16 @@ r"""
 """
 function codim(m::DualCell)
     # compute the rank of the active support
-    return rank(m.ambientSupport[m.activeSupport,:])-1
+
+    # take the submatrix of the ambient support indexed by active support
+    indexedSupport = m.ambientSupport[m.activeSupport,:]
+
+    # choose the first indexed element as a reference vector
+    referenceVector = Matrix{Int}(vcat(m.ambientSupport[m.activeSupport[1],:])')
+    # subtract this from every other row indexed by active support
+    indexedSupport = indexedSupport .- referenceVector
+
+    return rank(indexedSupport[2:end, :])
 end
 
 # handles printing of a dual cell

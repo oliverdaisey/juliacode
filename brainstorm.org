@@ -44,7 +44,8 @@ deterministic tiebreaker needs to be baked in to ensure consistency amongst path
 Parameters:
 - minOrMax distinguishes between min and max convention
 Content:
-- Vector{Vector{TropicalSemiringElem}} - a sqeuence of nodes between which the path is linear
+- Vector{DualPath} - the dual paths to traverse
+- Vector{Vector{Int}} - pointers specifying the order in which we travese the dual paths
 - Vector{tiebreaker}
 Note:
 - merged together from individual DualPaths

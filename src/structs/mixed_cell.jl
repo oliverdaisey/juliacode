@@ -29,7 +29,6 @@ function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
     @assert all([size(dualCell.ambientSupport, 2) == size(dualCells[1].ambientSupport, 2) for dualCell in dualCells]) "All dual cells must have the same ambient dimension"
 
     d = size(dualCells[1].ambientSupport, 2)
-    println(d)
 
     # check that the dual cells are of complementary dimension
     cellDims = [codim(dualCell) for dualCell in dualCells]
