@@ -2,7 +2,7 @@ include("../main.jl")
 
 n=3
 k=1
-T = tropical_semiring()
+T = TropicalSemiring()
 R, (x1, x2, x3) = T["x1", "x2", "x3"]
 
 # hypersurface set u
@@ -34,3 +34,7 @@ println("Tropical transverse intersection point = $(stable_intersection_point(s,
 
 # compute the drift
 println("Tropical drift = $(compute_drift(s, h, 1))")
+
+# encode path by tropical vectors
+# get mixed cell cone working with new types 
+# compute next breaking point
