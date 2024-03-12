@@ -1,6 +1,6 @@
 using Oscar
+include("../routines/cayley_embedding.jl")
 
-include("../type_aliases.jl")
 """
 Struct encapsulating the defining hyperplanes of a cone.
 
@@ -17,21 +17,32 @@ end
 """
     mixed_cell_cone(s::GeneralizedMixedCell, M::Matrix{QQFieldElem})
 
-Returns the generalized mixed cell cone of ``s`` in the cayley embedding given by `M`.
+Returns the mixed cell cone of ``s``.
 
-INPUTS:
-- ``s::GeneralizedMixedCell``: a generalized mixed cell of the cayley embedding. The first component is taken from a loopless facet of the matroid polytope associated to the `PluckerVector`, and components thereafter are from the tropical hypersurfaces.
-- ``M::Matrix{QQFieldElem}``: the cayley matrix of the point configurations.
-- ``n::Int``: the dimension of the ambient space.
 """
 function mixed_cell_cone(s::MixedCell)::MixedCellCone
 
-    # get all indices appearing in generalized mixed cell
-    extra_indices = [i for i in 1:nrows(s.ambientSupport) if !(i in s.activeSupport)]
+    # TODO: Optimise this code, we do not want the cayley embedding explicitly
+
+    # take cayley embedding of m
+    M = cayley_embedding([matrix(QQ, s.dual_cells[i].ambientSupport) for i in 1:length(s.dual_cells)])
+
+    active_indices = []
+    offset = 0
+    for dual_cell in s.dual_cells
+        push!(active_indices, offset .+ dual_cell.activeSupport)
+        offset += length(dual_cell.activeSupport)
+    end
+
+    # reduce active_indices to a single vector
+    active_indices = vcat(active_indices...)
+    extra_indices = [i for i in 1:nrows(M) if !(i in active_indices)]
     coefficient_vects = Vector{Vector{QQFieldElem}}()
 
+    # {active_indices, extra_indices} form a partition of all indices of the supports
+    # each extra index corresponds to a facet of the mixed cell cone
     for extra_index in extra_indices
-        push!(coefficient_vects, cone_coefficients(s.activeSupport, extra_index, s.ambientSupport))
+        push!(coefficient_vects, cone_coefficients(active_indices, extra_index, transpose(M))) # transpose to fit previous implementation
     end
 
     C = MixedCellCone(coefficient_vects)
@@ -59,7 +70,7 @@ function cone_coefficients(mixed_cell_indices::Vector{Int}, extra_index::Int, M:
     ν, null_space = Oscar.nullspace(submatrix)
     @assert ν == 1 "The null space should be one dimensional"
 
-    if null_space[nrows(null_space), 1] < 0
+    if null_space[ncols(null_space), 1] < 0
         # we want the normal to point in the right direction
         null_space = -null_space
     end

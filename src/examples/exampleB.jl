@@ -18,7 +18,6 @@ f_path = DualPath{DualPathHypersurface, typeof(min)}([T.([0, 3]), T.([0, -3])])
 
 # tropical linear space set up
 
-M = [1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 1]
 M_mod = [1 1 0; 1 0 1; 1 0 0; 0 1 1; 0 1 0; 0 0 1]
 p_start_dual = DualCell{DualCellLinear, typeof(min)}(M_mod, [1,2,3])
 p_path = DualPath{DualPathLinear, typeof(min)}([T.([0, 0, 0, 0, 0, 0])])
@@ -36,4 +35,5 @@ println("Tropical transverse intersection point = $(stable_intersection_point(s,
 println("Tropical drift = $(compute_drift(s, h, 1))")
 
 # get mixed cell cone working with new types 
+C_s = mixed_cell_cone(s)
 # compute next breaking point
