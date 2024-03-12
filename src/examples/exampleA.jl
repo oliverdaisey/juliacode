@@ -96,7 +96,6 @@ k = 1
 R, (x0, x1, x2, x3) = T["x0", "x1", "x2", "x3"]
 
 # compute plueker indices
-pluecker_indices = subsets(collect(1:(n+1)), k+1)
 pluecker_vector = [0 for i in 1:length(pluecker_indices)]
 pluecker_indices = subsets(collect(1:(n+1)), k+1)
 # pluecker_vector = elem_type(T)[T(0), T(0), zero(T), T(0), T(0), T(0)]
