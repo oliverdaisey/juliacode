@@ -2,7 +2,7 @@ include("../main.jl")
 
 n=3
 k=1
-T = TropicalSemiring()
+T = tropical_semiring()
 R, (x1, x2, x3) = T["x1", "x2", "x3"]
 
 # hypersurface set u
