@@ -13,14 +13,14 @@ f_target = x1*x2*x3 + T(-3)*T(0)
 # create the DualCell for f contributing to mixed cell
 f_start_dual = DualCell{DualCellHypersurface, typeof(min)}(generate_support(f_start), [1,2])
 # create the dual path
-f_path = DualPath{DualPathHypersurface, typeof(min)}([T.([0, 3]), T.([0, -3])])
+f_path = DualPath{DualPathHypersurface, typeof(min)}([T.([0, 3]), T.([0, -3])], generate_support(f_start))
 
 
 # tropical linear space set up
 
 M_mod = [1 1 0; 1 0 1; 1 0 0; 0 1 1; 0 1 0; 0 0 1]
 p_start_dual = DualCell{DualCellLinear, typeof(min)}(M_mod, [1,2,3])
-p_path = DualPath{DualPathLinear, typeof(min)}([T.([0, 0, 0, 0, 0, 0])])
+p_path = DualPath{DualPathLinear, typeof(min)}([T.([0, 0, 0, 0, 0, 0])], M_mod)
 
 # mixed cell set up
 s = mixed_cell([f_start_dual, p_start_dual])

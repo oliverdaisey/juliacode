@@ -1,19 +1,15 @@
 import Oscar.TropicalSemiringElem
+include("mixed_cell.jl")
+include("mixed_path.jl")
 
-abstract type Strategy end
-
-struct Series <: Strategy end
-struct Step <: Strategy end
-struct Parallel <: Strategy end
-
-struct MixedCellTracker{strategy<:Strategy}
-    pointers::Vector{Int}
-    dual_cell_trackers::Vector{DualCell}
+struct MixedCellTracker
+    mixed_path::MixedPath
+    mixed_cell::MixedCell
 end
 
-function mixed_cell_tracker(dual_cell_trackers::Vector{DualCellTracker}, strategy::Strategy)
-    check_mixed_cell_tracker_inputs(dual_cell_trackers)
-    return MixedCellTracker{strategy}(zeros(length(dual_cell_trackers), 1), dual_cell_trackers)
+function mixed_cell_tracker(mixed_path::MixedPath, mixed_cell::MixedCell)
+    @assert ambient_support(mixed_path) == ambient_support(mixed_cell) "Ambient supports do not match"
+    return MixedCellTracker(mixed_path, mixed_cell)
 end
 
 function check_mixed_cell_tracker_inputs(dual_cell_trackers)

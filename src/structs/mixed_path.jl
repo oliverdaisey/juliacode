@@ -1,5 +1,11 @@
 include("../structs/dual_path.jl")
 
+abstract type Strategy end
+
+struct Series <: Strategy end
+struct Step <: Strategy end
+struct Parallel <: Strategy end
+
 struct MixedPath
 
     pointers::Vector{Vector{Int}}
@@ -44,4 +50,8 @@ function lift_from_node_and_fraction(h::MixedPath, index::Int, t::QQFieldElem)
     @assert index != length(h.nodes) && t>0 "Cannot work out lift from the last node"
 
     return h.nodes[index] + t * (h.nodes[index+1] - h.nodes[index])
+end
+
+function ambient_support(h::MixedPath)
+    return vcat([dualPath.ambientSupport for dualPath in h.dualPaths]...)
 end

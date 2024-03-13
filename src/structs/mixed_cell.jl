@@ -34,3 +34,7 @@ function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
     cellDims = [codim(dualCell) for dualCell in dualCells]
     @assert sum(cellDims) == d "Dual cells must have complementary dimensions"
 end
+
+function ambient_support(s::MixedCell)
+    return vcat([dualCell.ambientSupport for dualCell in s.dual_cells]...)
+end
