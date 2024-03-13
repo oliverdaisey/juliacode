@@ -34,6 +34,5 @@ println("Tropical transverse intersection point = $(stable_intersection_point(s,
 # compute the drift
 println("Tropical drift = $(compute_drift(s, h, 1))")
 
-# get mixed cell cone working with new types 
-C_s = mixed_cell_cone(s)
 # compute next breaking point
+println("next breaking point at t = $(next_breaking_point(s, h, 1, QQFieldElem(0)))")

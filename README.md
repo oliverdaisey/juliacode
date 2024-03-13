@@ -6,7 +6,7 @@ This is a WIP package.
 ## Installation
 ```julia
 using Pkg
-Pkg.add("TropicalHomotopy")
+Pkg.add("TropicalHomotopies")
 ```
 Built on the work of Anders Jensen at https://arxiv.org/abs/1601.02818
 
