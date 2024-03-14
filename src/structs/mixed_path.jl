@@ -55,3 +55,11 @@ end
 function ambient_support(h::MixedPath)
     return vcat([dualPath.ambientSupport for dualPath in h.dualPaths]...)
 end
+
+function Base.show(io::IO, h::MixedPath)
+    print(io, "Mixed path with dual paths $(h.dualPaths)")
+end
+
+function Base.getindex(h::MixedPath, i::Int)
+    return vcat([h.dualPaths[j][h.pointers[i][j]] for j in 1:length(h.dualPaths)]...)
+end

@@ -38,3 +38,7 @@ end
 function ambient_support(s::MixedCell)
     return vcat([dualCell.ambientSupport for dualCell in s.dual_cells]...)
 end
+
+function Base.show(io::IO, s::MixedCell)
+    print(io, "Mixed cell with dual cells $(s.dual_cells)")
+end

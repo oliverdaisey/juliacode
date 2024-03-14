@@ -6,7 +6,7 @@ struct DualCellHypersurface <: DualCellType end
 struct DualCellLinear <: DualCellType end
 struct DualCellInvertedLinear <: DualCellType end
 
-struct DualCell{cellType<:DualCellType,minOrMax<:Union{typeof(min),typeof(max)}}
+mutable struct DualCell{cellType<:DualCellType,minOrMax<:Union{typeof(min),typeof(max)}}
 
     ambientSupport::Matrix{Int}
     activeSupport::Vector{Int}
