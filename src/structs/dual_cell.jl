@@ -13,20 +13,20 @@ mutable struct DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(ma
     end
 end
 
-r"""
+"""
     dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}, cellType::Symbol, ::typeof(min)=min)
 
-    Create a dual cell of the given type, using the min convention, with given ambient and active support.
+Create a dual cell of the given type, using the min convention, with given ambient and active support.
 
-    # Arguments
-    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
-    - `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
-    - `dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}`: The dual vector giving rise to this dual cell.
-    - `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
-    - `::typeof(min)`: The min convention.
+# Arguments
+- `ambientSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
+- `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
+- `dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}`: The dual vector giving rise to this dual cell.
+- `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
+- `::typeof(min)`: The min convention.
 
-    # Returns
-    A dual cell of the given type, using the min convention, with given ambient and active support.
+# Returns
+A dual cell of the given type, using the min convention, with given ambient and active support.
 """
 function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{typeof(min)}}, cellType::Symbol, ::typeof(min)=min)
     check_dual_cell_inputs(ambientSupport, activeSupport, cellType)
@@ -41,38 +41,39 @@ function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dual
     end
 end
 
-r"""
+"""
     dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}, cellType::Symbol, ::typeof(max)=max)
 
-    Create a dual cell of the given type, using the max convention, with given ambient and active support.
+Create a dual cell of the given type, using the max convention, with given ambient and active support.
 
-    # Arguments
-    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
-    - `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
-    - `dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}`: The dual vector giving rise to this dual cell.
-    - `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
-    - `::typeof(max)`: The max convention.
+# Arguments
+- `ambientSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
+- `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
+- `dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}`: The dual vector giving rise to this dual cell.
+- `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
+- `::typeof(max)`: The max convention.
 
-    # Throws
-    An error, as max tropical dual cells are currently unsupported.
+# Throws
+An error, as max tropical dual cells are currently unsupported.
+
 """
 function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{typeof(max)}}, cellType::Symbol, ::typeof(max))
     error("max tropical dual cells currently unsupported")
 end
 
-r"""
+"""
     check_dual_cell_inputs(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol, pluecker_vector::Union{TropicalPlueckerVector, Nothing}=nothing)
 
-    Check that the inputs to create a dual cell are valid.
+Check that the inputs to create a dual cell are valid.
 
-    # Arguments
-    - `ambientSupport::Matrix{Int}`: The ambient support of the dual cell.
-    - `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
-    - `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
-    - `pluecker_vector::Union{TropicalPlueckerVector, Nothing}`: The pluecker vector of the dual cell, required for linear and inverted linear dual cells.
+# Arguments
+- `ambientSupport::Matrix{Int}`: The ambient support of the dual cell.
+- `activeSupport::Vector{Int}`: The active support of the dual cell, corresponding to indices of columns of the ambient support.
+- `cellType::Symbol`: The type of the dual cell, must be one of :hypersurface, :linear, or :inverted_linear.
+- `pluecker_vector::Union{TropicalPlueckerVector, Nothing}`: The pluecker vector of the dual cell, required for linear and inverted linear dual cells.
 
-    # Throws
-    An error if the inputs are invalid.
+# Throws
+An error if the inputs are invalid.
 """
 function check_dual_cell_inputs(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, cellType::Symbol)
     if cellType == :hypersurface
@@ -84,16 +85,16 @@ function check_dual_cell_inputs(ambientSupport::Matrix{Int}, activeSupport::Vect
     end
 end
 
-r"""
+"""
     codim(m::DualCell)
 
-    Compute the codimension of a dual cell.
+Compute the codimension of a dual cell.
 
-    # Arguments
-    - `m::DualCell`: The dual cell.
+# Arguments
+- `m::DualCell`: The dual cell.
 
-    # Returns
-    The codimension of the dual cell.
+# Returns
+The codimension of the dual cell.
 """
 function codim(m::DualCell)
     # compute the rank of the active support

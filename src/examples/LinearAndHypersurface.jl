@@ -1,11 +1,11 @@
 include("../main.jl")
 
-r"""
+"""
 This example demonstrates our framework for intersecting a tropical linear space and a tropical hypersurface.
 
-	We want to study how the intersection of the following tropical spaces behaves:
-	- (1) the parametric tropical hypersurface V(x1*x2*x3 + w*x0^3) in RR^4
-	- (2) the tropical linear space arising from the Pluecker vector in TT^(4c2) with all zeroes
+We want to study how the intersection of the following tropical spaces behaves:
+- (1) the parametric tropical hypersurface V(x1*x2*x3 + w*x0^3) in RR^4
+- (2) the tropical linear space arising from the Pluecker vector in TT^(4c2) with all zeroes
 
 Since both spaces are invariant under translation by the all-ones vector, we project down to RR^3. This also gives a zero-dimensional intersection. 
 
@@ -43,5 +43,5 @@ println("Tropical transverse intersection point = $(stable_intersection_point(s_
 println("Tropical drift = $(compute_drift(s_tracker))")
 
 # compute next breaking point
-pt_of_interest, pt_type = next_point_of_interest(s_tracker)
-println("next point of interest is $pt_of_interest of type $pt_type")
+pt_of_interest, supports = next_point_of_interest(s_tracker)
+println("next point of interest is $pt_of_interest and $supports are the supports that change")

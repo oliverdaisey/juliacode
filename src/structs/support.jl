@@ -1,9 +1,9 @@
 include("dual_type.jl")
 
-@doc raw"""
+"""
     Support{dualType}(points::Matrix{Int})
 
-    A support for a dual object, with rows as points.
+A support for a dual object, with rows as points.
 
 """
 mutable struct Support{dualType<:DualType}

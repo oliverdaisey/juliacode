@@ -1,6 +1,6 @@
 using Oscar
 
-@doc raw"""
+"""
     generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})
 
 Generate the support of a tropical polynomial.

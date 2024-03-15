@@ -14,18 +14,18 @@ end
 
 import Oscar.tropical_pluecker_vector
 
-r"""
+"""
     tropical_pluecker_vector(pluecker_indices::Vector{Vector{Int}}, pluecker_entries::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:Union{typeof(min),typeof(max)}
 
-    Create a tropical Pluecker vector from the given indices and entries.
+Create a tropical Pluecker vector from the given indices and entries.
 
-    # Arguments
-    - `pluecker_indices::Vector{Vector{Int}}`: The indices of the pluecker vector.
-    - `pluecker_entries::Vector{Oscar.TropicalSemiringElem{minOrMax}}`: The entries of the pluecker vector. These are ordered according to the indices.
-    - `minOrMax::Union{typeof(min),typeof(max)}`: The min or max convention.
+# Arguments
+- `pluecker_indices::Vector{Vector{Int}}`: The indices of the pluecker vector.
+- `pluecker_entries::Vector{Oscar.TropicalSemiringElem{minOrMax}}`: The entries of the pluecker vector. These are ordered according to the indices.
+- `minOrMax::Union{typeof(min),typeof(max)}`: The min or max convention.
 
-    # Returns
-    A tropical pluecker vector from the given indices and entries.
+# Returns
+A tropical pluecker vector from the given indices and entries.
 
 """
 tropical_pluecker_vector(pluecker_indices::Vector{Vector{Int}}, pluecker_entries::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:Union{typeof(min),typeof(max)} = TropicalPlueckerVector(pluecker_indices, pluecker_entries)
@@ -41,16 +41,16 @@ function Base.show(io::IO, T::TropicalPlueckerVector)
     print(io, "Tropical Pluecker vector on indices $(T.pluecker_indices) with entries [$entries_string]")
 end
 
-r"""
+"""
     rank(T::TropicalPlueckerVector)
 
-    Compute the rank of a tropical pluecker vector. This is the rank of the matroid with bases given by the indices.
+Compute the rank of a tropical pluecker vector. This is the rank of the matroid with bases given by the indices.
 
-    # Arguments
-    - `T::TropicalPlueckerVector`: The tropical pluecker vector.
+# Arguments
+- `T::TropicalPlueckerVector`: The tropical pluecker vector.
 
-    # Returns
-    The rank of the tropical pluecker vector.
+# Returns
+The rank of the tropical pluecker vector.
 
 """
 function rank(T::TropicalPlueckerVector)

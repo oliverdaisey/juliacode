@@ -6,7 +6,8 @@ include("../structs/point_of_interest.jl")
 """
     next_point_of_interest(T::MixedCellTracker)
 
-    Given a mixed cell tracker, returns the next point of interest (either the next node, or the breaking point if it exists), along with the type of the point of interest.
+Given a mixed cell tracker, returns the next point of interest (either the next node, or the breaking point if it exists), along with the supports that change.
+
 """
 function next_point_of_interest(T::MixedCellTracker)
 
@@ -17,7 +18,7 @@ function next_point_of_interest(T::MixedCellTracker)
 
     # deal with the silly case that the mixed path only has one node left
     if pointer_index == length(h.pointers)
-        return nothing # this means that this mixed cell tracker is done
+        return nothing, [] # this means that this mixed cell tracker is done
     end
 
 
@@ -38,11 +39,27 @@ function next_point_of_interest(T::MixedCellTracker)
     direction_data = [x.data for x in direction]
     t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, direction_data)
 
+
     if t > 1 || isnothing(t)
-        # this means that the breaking point does not exist or takes us away from the path, so we should return the next node
-        return h[2], Node
+        # this means that the breaking point does not exist or takes us away from the path, so we should return the next node (no supports change)
+        return h[2], []
     end
 
-    return lift + direction_data * t, BreakingPoint
+    # otherwise we are in the case that the breaking point exists, work out which supports change
+    facet_point = lift + t*direction_data
+
+    # get supports that change
+    support_indices = []
+    for i in 1:length(C_s.coefficients)
+        if iszero(facet_point .* C_s.coefficients[i])
+            # intersects this facet, supports that change are indices of nonzero entries of C_s.coefficients[i]
+            push!(support_indices, findall(!iszero, C_s.coefficients[i]))
+        end
+    end
+
+    # make sure support_indices is unique
+    support_indices = unique(vcat(support_indices...))
+
+    return TT.(facet_point), support_indices
 
 end

@@ -2,16 +2,16 @@ struct MixedCell{minOrMax<:Union{typeof(min),typeof(max)}}
     dual_cells::Vector{DualCell}
 end
 
-r"""
+"""
     mixed_cell(dualCells::Vector{<: DualCell})
 
-    Create a mixed cell from the given dual cells.
+Create a mixed cell from the given dual cells.
 
-    # Arguments
-    - `dualCells::Vector{<: DualCell}`: The dual cells to be combined into a mixed cell.
+# Arguments
+- `dualCells::Vector{<: DualCell}`: The dual cells to be combined into a mixed cell.
 
-    # Returns
-    A mixed cell from the given dual cells.
+# Returns
+A mixed cell from the given dual cells.
 
 """
 function mixed_cell(dualCells::Vector{<: DualCell})
@@ -41,4 +41,8 @@ end
 
 function Base.show(io::IO, s::MixedCell)
     print(io, "Mixed cell with dual cells $(s.dual_cells)")
+end
+
+function get_lift(s::MixedCell)
+    
 end
