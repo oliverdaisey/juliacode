@@ -1,18 +1,13 @@
 using Oscar
-
-abstract type DualPathType end
-
-struct DualPathHypersurface <: DualPathType end
-struct DualPathLinear <: DualPathType end
-struct DualPathInvertedLinear <: DualPathType end
+include("dual_type.jl")
 
 
-struct DualPath{pathType<:DualPathType, minOrMax<:Union{typeof(min),typeof(max)}}
+struct DualPath{pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 
     nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}
-    ambientSupport::Matrix{Int}
+    ambientSupport::Support{pathType}
 
-    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientSupport::Matrix{Int}) where {pathType<:DualPathType, minOrMax<:Union{typeof(min),typeof(max)}}
+    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientSupport::Support{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
         return new{pathType, minOrMax}(nodes, ambientSupport)
     end
 

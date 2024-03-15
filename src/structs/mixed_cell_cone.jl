@@ -25,7 +25,7 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
     # TODO: Optimise this code, we do not want the cayley embedding explicitly
 
     # take cayley embedding of m
-    M = cayley_embedding([matrix(QQ, s.dual_cells[i].ambientSupport) for i in 1:length(s.dual_cells)])
+    M = cayley_embedding([matrix(QQ, s.dual_cells[i].ambientSupport.points) for i in 1:length(s.dual_cells)])
 
     active_indices = []
     offset = 0

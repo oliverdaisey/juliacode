@@ -1,18 +1,14 @@
 using Oscar
+include("support.jl")
+include("dual_type.jl")
 
-abstract type DualCellType end
+mutable struct DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
 
-struct DualCellHypersurface <: DualCellType end
-struct DualCellLinear <: DualCellType end
-struct DualCellInvertedLinear <: DualCellType end
-
-mutable struct DualCell{cellType<:DualCellType,minOrMax<:Union{typeof(min),typeof(max)}}
-
-    ambientSupport::Matrix{Int}
+    ambientSupport::Support{cellType}
     activeSupport::Vector{Int}
     dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}
 
-    function DualCell{cellType,minOrMax}(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {cellType<:DualCellType,minOrMax<:Union{typeof(min),typeof(max)}}
+    function DualCell{cellType,minOrMax}(ambientSupport::Support{cellType}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
         return new{cellType,minOrMax}(ambientSupport, activeSupport, dualVector)
     end
 end
@@ -35,11 +31,11 @@ r"""
 function dual_cell(ambientSupport::Matrix{Int}, activeSupport::Vector{Int}, dualVector::Vector{Oscar.TropicalSemiringElem{typeof(min)}}, cellType::Symbol, ::typeof(min)=min)
     check_dual_cell_inputs(ambientSupport, activeSupport, cellType)
     if cellType == :hypersurface
-        return DualCell{DualCellHypersurface,typeof(min)}(ambientSupport, activeSupport)
+        return DualCell{Hypersurface,typeof(min)}(ambientSupport, activeSupport)
     elseif cellType == :linear
-        return DualCell{DualCellLinear,typeof(min)}(ambientSupport, activeSupport)
+        return DualCell{Linear,typeof(min)}(ambientSupport, activeSupport)
     elseif cellType == :inverted_linear
-        return DualCell{DualCellInvertedLinear,typeof(min)}(ambientSupport, activeSupport)
+        return DualCell{InvertedLinear,typeof(min)}(ambientSupport, activeSupport)
     else
         throw(ArgumentError("cellType must be one of :hypersurface, :linear, or :inverted_linear"))
     end
@@ -103,7 +99,7 @@ function codim(m::DualCell)
     # compute the rank of the active support
 
     # take the submatrix of the ambient support indexed by active support
-    indexedSupport = m.ambientSupport[m.activeSupport, :]
+    indexedSupport = m.ambientSupport[m.activeSupport]
 
     # choose the first indexed element as a reference vector
     referenceVector = Matrix{Int}(vcat(m.ambientSupport[m.activeSupport[1], :])')
