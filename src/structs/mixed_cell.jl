@@ -43,6 +43,10 @@ function Base.show(io::IO, s::MixedCell)
     print(io, "Mixed cell with dual cells $(s.dual_cells)")
 end
 
-function get_lift(s::MixedCell)
-    
+function dual_cells(s::MixedCell)
+    return s.dual_cells
+end
+
+function mixed_vector(s::MixedCell)
+    return dual_vector.(dual_cells(s))
 end

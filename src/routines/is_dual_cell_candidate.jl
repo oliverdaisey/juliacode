@@ -1,17 +1,28 @@
 include("../structs/dual_type.jl")
 include("../structs/support.jl")
 
-function is_dual_cell_candidate(s::Vector{Int}, S::Support{<:DualType})
-    type = typeof(S).parameters[1]
-    if type == Hypersurface
-        return length(s) >= 2
-    elseif type == Linear || S.parameters == InvertedLinear
-        return is_loopless(s, S)
-    else
-        throw(ArgumentError("Support type must be one of :Hypersurface, :Linear, or :InvertedLinear"))
-    end
+function is_dual_cell_candidate(s::Vector{Int}, S::Support{Hypersurface})
+    return length(s) >= 2
+end
+
+function is_dual_cell_candidate(s::Vector{Int}, S::Support{<:Union{Linear, InvertedLinear}})
+    return is_loopless(s, S)
 end
 
 function is_loopless(s::Vector{Int}, S::Support{<:Union{Linear, InvertedLinear}})
-    throw(ArgumentError("is_loopless not yet implemented"))
+
+    Ss = S[s]
+    return findfirst(iszero, [Ss[:,i] for i in 1:size(Ss,2)]) === nothing
+end
+
+function is_loopless(Ss::Vector{Vector{Int}}, S::Support{<:Union{Linear, InvertedLinear}})
+    return findfirst(iszero, [Ss[:,i] for i in 1:size(Ss,2)]) === nothing
+end
+
+function is_dual_cell_candidate(Ss::Vector{Vector{Int}}, S::Support{<:Union{Linear, InvertedLinear}})
+    return is_loopless(Ss, S)
+end
+
+function is_dual_cell_candidate(Ss::Vector{Vector{Int}}, S::Support{Hypersurface})
+    return length(Ss)>1
 end

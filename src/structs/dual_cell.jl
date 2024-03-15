@@ -114,3 +114,15 @@ end
 function Base.show(io::IO, m::DualCell)
     print(io, "Dual cell of type $(typeof(m).parameters[1]) supported on vertices $(m.activeSupport)")
 end
+
+function ambient_support(m::DualCell)
+    return m.ambientSupport
+end
+
+function active_support(m::DualCell)
+    return m.activeSupport
+end
+
+function dual_vector(m::DualCell)
+    return m.dualVector
+end
