@@ -1,6 +1,5 @@
 include("../structs/mixed_cell_cone.jl")
 include("ray_intersects_cone.jl")
-include("../structs/point_of_interest.jl")
 
 
 """
@@ -27,6 +26,8 @@ function next_point_of_interest(T::MixedCellTracker)
 
     # get the lift at this time
     lift = vcat([lift_from_node_and_fraction(h.dualPaths[i], dual_path_pointers[i], fraction) for i in 1:n]...)
+
+    println("lift = $(lift)")
 
     # get direction path is travelling in dual space
     next_dual_path_pointers = h.pointers[pointer_index+1]

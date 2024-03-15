@@ -70,7 +70,7 @@ function cone_coefficients(mixed_cell_indices::Vector{Int}, extra_index::Int, M:
     ν, null_space = Oscar.nullspace(submatrix)
     @assert ν == 1 "The null space should be one dimensional"
 
-    if null_space[ncols(null_space), 1] < 0
+    if null_space[ncols(null_space), 1] > 0
         # we want the normal to point in the right direction
         null_space = -null_space
     end
