@@ -15,6 +15,8 @@ function next_point_of_interest(T::MixedCellTracker)
     pointer_index = 1
     fraction = QQFieldElem(0)
 
+    lengths = length.(ambient_support.(dual_cells(T.mixed_cell)))
+
     # deal with the silly case that the mixed path only has one node left
     if pointer_index == length(h.pointers)
         return nothing, [] # this means that this mixed cell tracker is done
@@ -41,7 +43,7 @@ function next_point_of_interest(T::MixedCellTracker)
 
     if t > 1 || isnothing(t)
         # this means that the breaking point does not exist or takes us away from the path, so we should return the next node (no supports change)
-        return h[2], []
+        return partition_vector(lengths, h[2]), []
     end
 
     # otherwise we are in the case that the breaking point exists, work out which supports change
@@ -59,6 +61,20 @@ function next_point_of_interest(T::MixedCellTracker)
     # make sure support_indices is unique
     support_indices = unique(vcat(support_indices...))
 
-    return TT.(facet_point), support_indices
+    return partition_vector(lengths, TT.(facet_point)), support_indices
+
+end
+
+function partition_vector(lengths::Vector{Int}, v::Vector{Oscar.TropicalSemiringElem{minOrMax}})::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}} where {minOrMax<:Union{typeof(min),typeof(max)}}
+    # first vector should have length lengths[1], second vector should have length lengths[2], etc.
+
+    partitionedVector = Vector{Oscar.TropicalSemiringElem{minOrMax}}[]
+    startIndex = 1
+    for length in lengths
+        endIndex = startIndex + length - 1
+        push!(partitionedVector, v[startIndex:endIndex])
+        startIndex = endIndex + 1
+    end
+    return partitionedVector
 
 end

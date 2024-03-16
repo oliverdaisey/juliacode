@@ -18,6 +18,10 @@ function points(s::Support)
     return s.points
 end
 
+function tropical_ambient_dim(s::Support)
+    return size(s.points, 2)
+end
+
 function Base.getindex(s::Support, i::Int)
     return s.points[i, :]
 end
@@ -36,4 +40,12 @@ end
 
 function Base.size(s::Support, i::Int)
     return size(s.points, i)
+end
+
+function Base.length(s::Support)
+    return size(s.points, 1)
+end
+
+function Base.iterate(s::Support)
+    return iterate(s[i] for i in 1:length(s))
 end

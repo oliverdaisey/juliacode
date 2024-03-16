@@ -24,7 +24,7 @@ p_support = Support{Linear}([1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 
 
 # write down the paths in the dual space
 f_nodes = [TT.([0, -3]), TT.([0, 3])] # a path is given by a sequence of nodes
-p_nodes = [TT.([0, 0, 0, 0, 0, 0])] # the tropical linear space is not moving
+p_nodes = [TT.([0, 0, 0, 0, 0, 0])] # the tropical linear space s not moving
 f_path = DualPath{Hypersurface, typeof(min)}(f_nodes, f_support)
 p_path = DualPath{Linear, typeof(min)}(p_nodes, p_support)
 h = mixed_path_in_series([f_path, p_path]) # this generates the path through the big dual space of their intersection
@@ -41,6 +41,7 @@ s_tracker = mixed_cell_tracker(h, s)
 println("Tropical transverse intersection point = $(stable_intersection_point(s_tracker.mixed_cell))")
 
 # verify the drift is in the correct direction
+drift = compute_drift(s_tracker)
 println("Tropical drift = $(compute_drift(s_tracker))")
 
 # compute next breaking point

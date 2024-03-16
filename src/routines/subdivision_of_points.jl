@@ -1,6 +1,6 @@
 using Oscar
 
-function subdivision_of_points_workaround(points::Matrix{Int}, weights::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where (minOrMax <: Union{typeof(min), typeof(max)})
+function subdivision_of_points_workaround(points::Matrix{Int}, weights::Vector)
     indices = findall(!iszero, weights)
 
     relevant_points = points[indices, :]

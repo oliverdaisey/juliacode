@@ -138,3 +138,27 @@ end
 function convention(m::DualCell{cellType, typeof(max)}) where cellType <: DualType
     return max
 end
+
+function center(m::DualCell)
+    return QQ.([sum(active_support(m), dims=1)...]) / length(active_indices(m))
+end
+
+import Oscar.convex_hull
+function convex_hull(m::DualCell)
+    return convex_hull(active_support(m))
+end
+
+function dual_facets(m::DualCell)
+    cellHull = convex_hull(active_support(m))
+    properDualFaces = DualCell[]
+    for face in faces(cellHull, dim(cellHull) - 1)
+        faceVertices = [Int.(v) for v in vertices(face)]
+        println(faceVertices)
+        println("is dual cell candidate: ", is_dual_cell_candidate(ambient_support(m), faceVertices))
+        if is_dual_cell_candidate(ambient_support(m), faceVertices)
+            push!(properDualFaces, dual_cell(ambient_support(m), faceVertices, dual_vector(m)))
+        end
+    end
+        
+    return properDualFaces
+end

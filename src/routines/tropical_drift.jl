@@ -1,6 +1,6 @@
 using Oscar
 
-function compute_drift(T::MixedCellTracker)
+function tropical_drift(T::MixedCellTracker)
 
     # to do: infer a correct epsilon analytically
     epsilon = QQFieldElem(1//100)

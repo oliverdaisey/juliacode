@@ -50,3 +50,10 @@ function tropical_lineality_dim(dualCells::Vector{<: DualCell})
     hulls = convex_hull.(points.(ambient_support.(dualCells)))
     return codim(sum(hulls))
 end
+
+function tropical_lineality_space(s::MixedCell)
+    sumHulls = sum(convex_hull.(points.(ambient_support.(dual_cells(s)))))
+    
+    return affine_equation_matrix(affine_hull(sumHulls))[:,2:end]
+
+end

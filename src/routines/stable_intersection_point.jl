@@ -28,6 +28,10 @@ function stable_intersection_point(s::MixedCell)
     b = QQ.(coefficientDifferences; preserve_ordering=true)
     @assert rank(M) == ncols(M) - tropical_lineality_dim(dual_cells(s)) "The intersection is not transverse modulo lineality"
 
+    linealityGens = tropical_lineality_space(s)
+    M = vcat(M, linealityGens)
+    b = vcat(b, zeros(QQ, nrows(linealityGens)))
+
     solution = solve(M, b, side=:right)
     return solution
 
