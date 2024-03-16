@@ -12,5 +12,5 @@ Generate the support of a tropical polynomial.
 - The support of the tropical polynomial.
 """
 function generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})::Matrix{Int64}
-    return Matrix{Int}((f.exps)')
+    return transpose(hcat(collect(exponents(f))...))
 end

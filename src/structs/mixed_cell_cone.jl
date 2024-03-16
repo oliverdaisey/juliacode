@@ -1,5 +1,6 @@
 using Oscar
 include("../routines/cayley_embedding.jl")
+include("dual_cell.jl")
 
 """
 Struct encapsulating the defining hyperplanes of a cone.
@@ -27,22 +28,22 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
     # take cayley embedding of m
     M = cayley_embedding([matrix(QQ, s.dual_cells[i].ambientSupport.points) for i in 1:length(s.dual_cells)])
 
-    active_indices = []
+    activeIndices = Vector{Int}[]
     offset = 0
     for dual_cell in s.dual_cells
-        push!(active_indices, offset .+ dual_cell.activeSupport)
-        offset += length(dual_cell.activeSupport)
+        push!(activeIndices, offset .+ active_indices(dual_cell))
+        offset += length(active_indices(dual_cell))
     end
 
     # reduce active_indices to a single vector
-    active_indices = vcat(active_indices...)
-    extra_indices = [i for i in 1:nrows(M) if !(i in active_indices)]
+    activeIndices = vcat(activeIndices...)
+    extraIndices = [i for i in 1:nrows(M) if !(i in activeIndices)]
     coefficient_vects = Vector{Vector{QQFieldElem}}()
 
     # {active_indices, extra_indices} form a partition of all indices of the supports
     # each extra index corresponds to a facet of the mixed cell cone
-    for extra_index in extra_indices
-        push!(coefficient_vects, cone_coefficients(active_indices, extra_index, transpose(M))) # transpose to fit previous implementation
+    for extraIndex in extraIndices
+        push!(coefficient_vects, cone_coefficients(activeIndices, extraIndex, transpose(M))) # transpose to fit previous implementation
     end
 
     C = MixedCellCone(coefficient_vects)

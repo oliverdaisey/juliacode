@@ -14,6 +14,10 @@ mutable struct Support{dualType<:DualType}
     end
 end
 
+function points(s::Support)
+    return s.points
+end
+
 function Base.getindex(s::Support, i::Int)
     return s.points[i, :]
 end

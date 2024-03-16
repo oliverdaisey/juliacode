@@ -27,8 +27,6 @@ function next_point_of_interest(T::MixedCellTracker)
     # get the lift at this time
     lift = vcat([lift_from_node_and_fraction(h.dualPaths[i], dual_path_pointers[i], fraction) for i in 1:n]...)
 
-    println("lift = $(lift)")
-
     # get direction path is travelling in dual space
     next_dual_path_pointers = h.pointers[pointer_index+1]
     direction = vcat([h.dualPaths[i].nodes[next_dual_path_pointers[i]] for i in 1:n]...) ./ vcat([h.dualPaths[i].nodes[dual_path_pointers[i]] for i in 1:n]...)

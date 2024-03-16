@@ -20,19 +20,14 @@ function mixed_cell(dualCells::Vector{<: DualCell})
 end
 
 function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
-    # check that the dual cells are using the same convention
-    cellTypes = [typeof(dualCell).parameters for dualCell in dualCells]
-    @assert all(cellTypes[2] .== cellTypes[2]) "All dual cells must use the same min/max convention"
 
     @assert length(dualCells) > 0 "Mixed cell must contain at least one dual cell"
+    @assert length(unique(convention.(dualCells))) == 1 "All dual cells must use the same min/max convention"
+    @assert length(unique(ambient_dim.(dualCells))) == 1 "All dual cells must have the same ambient dimension"
 
-    @assert all([size(dualCell.ambientSupport, 2) == size(dualCells[1].ambientSupport, 2) for dualCell in dualCells]) "All dual cells must have the same ambient dimension"
+    n = ambient_dim(dualCells[1])
 
-    d = size(dualCells[1].ambientSupport, 2)
-
-    # check that the dual cells are of complementary dimension
-    cellDims = [codim(dualCell) for dualCell in dualCells]
-    @assert sum(cellDims) == d "Dual cells must have complementary dimensions"
+    @assert sum(tropical_codim.(dualCells)) + tropical_lineality_dim(dualCells) == n "Dual cells must have complementary dimensions"
 end
 
 function ambient_support(s::MixedCell)
@@ -49,4 +44,9 @@ end
 
 function mixed_vector(s::MixedCell)
     return dual_vector.(dual_cells(s))
+end
+
+function tropical_lineality_dim(dualCells::Vector{<: DualCell})
+    hulls = convex_hull.(points.(ambient_support.(dualCells)))
+    return codim(sum(hulls))
 end

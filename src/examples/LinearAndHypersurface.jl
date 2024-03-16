@@ -14,12 +14,12 @@ The homotopy we follow initialises the system at w=-3 and moves to w=3, where in
 
 # set up the ambient rings
 TT = tropical_semiring()
-R, (x1, x2, x3) = TT["x1", "x2", "x3"]
+R, (x0, x1, x2, x3) = TT["x0", "x1", "x2", "x3"]
 
 # write down the data for the tropical spaces
-f_start = x1 * x2 * x3 + TT(-3)
+f_start = x1 * x2 * x3 + TT(-3)*x0^3
 f_support = Support{Hypersurface}(generate_support(f_start)) # helper function to generate the support from a polynomial
-p_support = Support{Linear}([1 1 0; 1 0 1; 1 0 0; 0 1 1; 0 1 0; 0 0 1]) # points of the matroid polytope projected down
+p_support = Support{Linear}([1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 1]) # points of the matroid polytope projected down
 # loopless facets: (1,2,3), (2,3,4), (1,3,4), (1,2,4), (3,5,6)
 
 # write down the paths in the dual space
@@ -31,7 +31,7 @@ h = mixed_path_in_series([f_path, p_path]) # this generates the path through the
 
 # create the starting dual cells and their mixed cell
 f_start_dual = DualCell{Hypersurface, typeof(min)}(f_support, [1, 2], f_nodes[1])
-p_start_dual = DualCell{Linear, typeof(min)}(p_support, [3, 5, 6], p_nodes[1]) # indices 1,2,3 correspond to a loopless facet
+p_start_dual = DualCell{Linear, typeof(min)}(p_support, [1, 2, 3], p_nodes[1]) # indices 1,2,3 correspond to a loopless facet
 s = mixed_cell([f_start_dual, p_start_dual])
 
 # create the mixed cell tracker to kick off our example
@@ -45,4 +45,4 @@ println("Tropical drift = $(compute_drift(s_tracker))")
 
 # compute next breaking point
 pt_of_interest, supports = next_point_of_interest(s_tracker)
-println("next point of interest is $pt_of_interest and $supports are the supports that change")
+println("next point of interest is $pt_of_interest")
