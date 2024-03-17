@@ -1,12 +1,12 @@
 
-function perturb_dual_vector(S::Support{Hypersurface}, c::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax <: Union{typeof(min), typeof(max)}}
+function perturb_dual_vector(S::DualSupport{Hypersurface}, c::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax <: Union{typeof(min), typeof(max)}}
     epsilon = QQ(1//1000000)
     perturbation = epsilon.*rand(-99:99, length(c))
 
     return c .* parent(first(c)).(perturbation)
 end
 
-function perturb_dual_vector(S::Support{<:Union{Linear, InvertedLinear}}, c::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax <: Union{typeof(min), typeof(max)}}
+function perturb_dual_vector(S::DualSupport{<:Union{Linear, InvertedLinear}}, c::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax <: Union{typeof(min), typeof(max)}}
 
     epsilon = QQ(1//1000000)
     n = tropical_ambient_dim(S)

@@ -52,7 +52,7 @@ function lift_from_node_and_fraction(h::MixedPath, index::Int, t::QQFieldElem)
 end
 
 function ambient_support(h::MixedPath)
-    return vcat([dualPath.ambientSupport for dualPath in h.dualPaths]...)
+    return vcat([dualPath.ambientDualSupport for dualPath in h.dualPaths]...)
 end
 
 function Base.show(io::IO, h::MixedPath)

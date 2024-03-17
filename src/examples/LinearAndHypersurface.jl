@@ -18,8 +18,8 @@ R, (x0, x1, x2, x3) = TT["x0", "x1", "x2", "x3"]
 
 # write down the data for the tropical spaces
 f_start = x1 * x2 * x3 + TT(-3)*x0^3
-f_support = Support{Hypersurface}(generate_support(f_start)) # helper function to generate the support from a polynomial
-p_support = Support{Linear}([1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 1]) # points of the matroid polytope projected down
+f_support = DualSupport{Hypersurface}(generate_support(f_start)) # helper function to generate the support from a polynomial
+p_support = DualSupport{Linear}([1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 1]) # points of the matroid polytope projected down
 # loopless facets: (1,2,3), (2,3,4), (1,3,4), (1,2,4), (3,5,6)
 
 # write down the paths in the dual space
@@ -47,6 +47,3 @@ println("Tropical drift = $(tropical_drift(s_tracker))")
 # compute next breaking point
 pt_of_interest, supports = next_point_of_interest(s_tracker)
 println("next point of interest is $pt_of_interest")
-
-# compute inflation of the dual cells at the breaking point
-inflated_cells = inflation(mixed_cell(s_tracker), pt_of_interest, supports)

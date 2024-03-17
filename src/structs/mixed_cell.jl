@@ -31,7 +31,7 @@ function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
 end
 
 function ambient_support(s::MixedCell)
-    return vcat([dualCell.ambientSupport for dualCell in s.dual_cells]...)
+    return vcat([dualCell.ambientDualSupport for dualCell in s.dual_cells]...)
 end
 
 function Base.show(io::IO, s::MixedCell)

@@ -1,12 +1,12 @@
 using Oscar
 
 """
-    dual_cells(S::Support{<:DualType}, c::Vector{Oscar.TropicalSemiringElem})
+    dual_cells(S::DualSupport{<:DualType}, c::Vector{Oscar.TropicalSemiringElem})
 
 Create a vector of all the dual cells from a support (of exponent vectors) and a lift.
 
 """
-function dual_cells(S::Support{<:DualType}, c::Vector{<:Oscar.TropicalSemiringElem})
+function dual_cells(S::DualSupport{<:DualType}, c::Vector{<:Oscar.TropicalSemiringElem})
 
     dualSubdivision = subdivision_of_points_workaround(S.points, c)
     polyhedralComplex = polyhedral_complex(Oscar.pm_object(dualSubdivision).POLYHEDRAL_COMPLEX)

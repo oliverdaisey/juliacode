@@ -2,10 +2,10 @@
 struct DualPath{pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 
     nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}
-    ambientSupport::Support{pathType}
+    ambientDualSupport::DualSupport{pathType}
 
-    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientSupport::Support{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
-        return new{pathType, minOrMax}(nodes, ambientSupport)
+    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientDualSupport::DualSupport{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+        return new{pathType, minOrMax}(nodes, ambientDualSupport)
     end
 
 end
