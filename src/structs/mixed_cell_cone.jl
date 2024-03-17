@@ -92,3 +92,7 @@ function mixed_cell_cone_to_polyhedron(C::MixedCellCone)::Polyhedron
     return polyhedron(coefficient_matrix, zeros(QQ, nrows(coefficient_matrix)))
     
 end
+
+function coefficients(C::MixedCellCone)::Vector{Vector{QQFieldElem}}
+    return C.coefficients
+end

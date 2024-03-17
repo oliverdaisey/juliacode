@@ -124,7 +124,7 @@ function active_support(m::DualCell)
     return ambient_support(m)[active_indices(m)]
 end
 
-function dual_vector(m::DualCell)
+function dual_weight(m::DualCell)
     return m.dualWeight
 end
 
@@ -153,9 +153,33 @@ function dual_facets(m::DualCell)
         println(faceVertices)
         println("is dual cell candidate: ", is_dual_cell_candidate(ambient_support(m), faceVertices))
         if is_dual_cell_candidate(ambient_support(m), faceVertices)
-            push!(properDualFaces, dual_cell(ambient_support(m), faceVertices, dual_vector(m)))
+            push!(properDualFaces, dual_cell(ambient_support(m), faceVertices, dual_weight(m)))
         end
     end
         
     return properDualFaces
+end
+
+"""
+    dual_cells(S::DualSupport{<:DualType}, c::Vector{Oscar.TropicalSemiringElem})
+
+Create a vector of all the dual cells from a support (of exponent vectors) and a lift.
+
+"""
+function dual_cells(S::DualSupport{<:DualType}, c::Vector{<:Oscar.TropicalSemiringElem})
+
+    dualSubdivision = subdivision_of_points_workaround(points(S), c)
+    polyhedralComplex = polyhedral_complex(Oscar.pm_object(dualSubdivision).POLYHEDRAL_COMPLEX)
+
+    dualCells = []
+    for i in tropical_codim(S):dim(polyhedralComplex)
+        for p in polyhedra_of_dim(polyhedralComplex, i)
+            s = [Int.(v) for v in vertices(p)]
+            if is_dual_cell_candidate(S, s)
+                push!(dualCells, dual_cell(S, s, c))
+            end
+        end
+    end
+
+    return dualCells
 end

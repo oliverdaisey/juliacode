@@ -12,30 +12,29 @@ function next_point_of_interest(T::MixedCellTracker)
     pointer_index = 1
     fraction = QQFieldElem(0)
 
-    lengths = length.(ambient_support.(dual_cells(T.mixed_cell)))
+    lengths = length.(ambient_support.(dual_cells(mixed_cell(T))))
 
     # deal with the silly case that the mixed path only has one node left
-    if pointer_index == length(h.pointers)
+    if pointer_index == length(pointers(h))
         return nothing, [] # this means that this mixed cell tracker is done
     end
 
 
-    dual_path_pointers = h.pointers[pointer_index]
+    dual_path_pointers = pointers(h)[pointer_index]
     n = length(dual_path_pointers)
 
     # get the lift at this time
-    lift = vcat([lift_from_node_and_fraction(h.dualPaths[i], dual_path_pointers[i], fraction) for i in 1:n]...)
+    lift = vcat([lift_from_node_and_fraction(dual_paths(h)[i], dual_path_pointers[i], fraction) for i in 1:n]...)
 
     # get direction path is travelling in dual space
-    next_dual_path_pointers = h.pointers[pointer_index+1]
-    direction = vcat([h.dualPaths[i].nodes[next_dual_path_pointers[i]] for i in 1:n]...) ./ vcat([h.dualPaths[i].nodes[dual_path_pointers[i]] for i in 1:n]...)
+    next_dual_path_pointers = pointers(h)[pointer_index+1]
+    direction = vcat([nodes(dual_paths(h)[i])[next_dual_path_pointers[i]] for i in 1:n]...) ./ vcat([nodes(dual_paths(h)[i])[dual_path_pointers[i]] for i in 1:n]...)
 
     C_s = mixed_cell_cone(s)
 
     # starting at `lift` and moving in the direction `direction`, when do we hit facet of C_s?
     # we want to find the smallest t such that lift + t*direction is on the facet of C_s
-    direction_data = [x.data for x in direction]
-    t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, direction_data)
+    t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, QQ.(direction))
 
 
     if t > 1 || isnothing(t)
@@ -44,14 +43,14 @@ function next_point_of_interest(T::MixedCellTracker)
     end
 
     # otherwise we are in the case that the breaking point exists, work out which supports change
-    facet_point = lift + t*direction_data
+    facet_point = lift + t*QQ.(direction)
 
     # get supports that change
     support_indices = []
-    for i in 1:length(C_s.coefficients)
-        if iszero(facet_point .* C_s.coefficients[i])
-            # intersects this facet, supports that change are indices of nonzero entries of C_s.coefficients[i]
-            push!(support_indices, findall(!iszero, C_s.coefficients[i]))
+    for i in 1:length(coefficients(C_s))
+        if iszero(facet_point .* coefficients(C_s)[i])
+            # intersects this facet, supports that change are indices of nonzero entries of coefficients of C_s
+            push!(support_indices, findall(!iszero, coefficients(C_s)[i]))
         end
     end
 

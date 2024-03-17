@@ -48,3 +48,18 @@ end
 function Base.iterate(s::DualSupport)
     return iterate(s[i] for i in 1:length(s))
 end
+
+"""
+    generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})
+
+Generate the support of a tropical polynomial.
+
+# Arguments
+- `f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}}`: The tropical polynomial.
+
+# Returns
+- The support of the tropical polynomial.
+"""
+function generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})::Matrix{Int64}
+    return transpose(hcat(collect(exponents(f))...))
+end

@@ -38,6 +38,10 @@ function Base.show(io::IO, s::MixedCell)
     print(io, "Mixed cell with dual cells $(s.dual_cells)")
 end
 
+function Base.copy(s::MixedCell)
+    return MixedCell{typeof(min)}(copy(s.dual_cells))
+end
+
 function dual_cells(s::MixedCell)
     return s.dual_cells
 end

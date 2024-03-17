@@ -29,3 +29,7 @@ end
 function Base.getindex(h::DualPath, i::Int)
     return h.nodes[i]
 end
+
+function nodes(h::DualPath)
+    return h.nodes
+end

@@ -22,3 +22,11 @@ end
 function Base.show(io::IO, T::MixedCellTracker)
     print(io, "Tracker for a mixed cell along a mixed path")
 end
+
+function mixed_cell(T::MixedCellTracker)::MixedCell
+    return T.mixed_cell
+end
+
+function mixed_path(T::MixedCellTracker)::MixedPath
+    return T.mixed_path
+end

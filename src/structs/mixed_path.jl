@@ -62,3 +62,11 @@ end
 function Base.getindex(h::MixedPath, i::Int)
     return vcat([h.dualPaths[j][h.pointers[i][j]] for j in 1:length(h.dualPaths)]...)
 end
+
+function pointers(h::MixedPath)
+    return h.pointers
+end
+
+function dual_paths(h::MixedPath)
+    return h.dualPaths
+end
