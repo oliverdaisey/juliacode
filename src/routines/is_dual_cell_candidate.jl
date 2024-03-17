@@ -1,5 +1,3 @@
-include("../structs/dual_type.jl")
-include("../structs/support.jl")
 
 function is_dual_cell_candidate(S::Support{Hypersurface}, s::Vector{Int})
     return length(s) >= 2

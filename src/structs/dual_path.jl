@@ -1,6 +1,3 @@
-using Oscar
-include("dual_type.jl")
-
 
 struct DualPath{pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 

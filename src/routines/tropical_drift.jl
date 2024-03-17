@@ -1,4 +1,3 @@
-using Oscar
 
 function tropical_drift(T::MixedCellTracker)
 

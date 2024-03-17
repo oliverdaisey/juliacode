@@ -1,6 +1,3 @@
-using Oscar
-include("support.jl")
-include("dual_type.jl")
 
 mutable struct DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
 

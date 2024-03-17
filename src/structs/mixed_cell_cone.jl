@@ -1,6 +1,4 @@
 using Oscar
-include("../routines/cayley_embedding.jl")
-include("dual_cell.jl")
 
 """
 Struct encapsulating the defining hyperplanes of a cone.

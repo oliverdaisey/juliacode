@@ -1,4 +1,3 @@
-include("dual_type.jl")
 
 """
     Support{dualType}(points::Matrix{Int})

@@ -1,4 +1,3 @@
-include("subdivision_of_points.jl")
 
 function regular_subdivisions(s::MixedCell)
     regularSubdivisions = []

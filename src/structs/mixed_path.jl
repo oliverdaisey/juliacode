@@ -1,4 +1,3 @@
-include("../structs/dual_path.jl")
 
 abstract type Strategy end
 

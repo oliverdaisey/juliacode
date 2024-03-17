@@ -1,5 +1,3 @@
-include("../structs/dual_type.jl")
-include("../structs/support.jl")
 
 function tropical_codim(S::Support{Hypersurface})
     return 1

@@ -4,10 +4,8 @@ function inflation(dualCell::DualCell, breakingPoint::Vector{Oscar.TropicalSemir
     # create all dual cells with respect to the breaking point
     breakingPointDualCells = dual_cells(ambient_support(dualCell), breakingPoint)
 
-    println("center = ", center(dualCell))  
     epsilon = QQ(1//1000000)
     driftedCenter = center(dualCell) - epsilon*drift
-    println("driftedCenter = ", Float64.(driftedCenter))
 
     inflationDualCells = DualCell[]
 

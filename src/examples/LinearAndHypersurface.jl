@@ -41,9 +41,12 @@ s_tracker = mixed_cell_tracker(h, s)
 println("Tropical transverse intersection point = $(stable_intersection_point(s_tracker.mixed_cell))")
 
 # verify the drift is in the correct direction
-drift = compute_drift(s_tracker)
-println("Tropical drift = $(compute_drift(s_tracker))")
+drift = tropical_drift(s_tracker)
+println("Tropical drift = $(tropical_drift(s_tracker))")
 
 # compute next breaking point
 pt_of_interest, supports = next_point_of_interest(s_tracker)
 println("next point of interest is $pt_of_interest")
+
+# compute inflation of the dual cells at the breaking point
+inflated_cells = inflation(mixed_cell(s_tracker), pt_of_interest, supports)

@@ -1,6 +1,3 @@
-include("../structs/mixed_cell_cone.jl")
-include("ray_intersects_cone.jl")
-
 
 """
     next_point_of_interest(T::MixedCellTracker)

@@ -1,6 +1,4 @@
 import Oscar.TropicalSemiringElem
-include("mixed_cell.jl")
-include("mixed_path.jl")
 
 """
 This struct couples a mixed cell to a mixed path, which allows one to ask for things like breaking points or drifts. This data forms the fundamental building blocks of our tropical homotopy algorithm.
