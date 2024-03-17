@@ -1,4 +1,8 @@
+"""
+    DualPath{pathType, minOrMax}
 
+A dual path is a sequence of nodes, each of which is a vector of tropical semiring elements. The nodes are connected by a linear interpolation. The ambient dual support is the support of the dual cell. Construct them with this data, or alternatively use the `dual_path` function.
+"""
 struct DualPath{pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 
     nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}
@@ -10,6 +14,29 @@ struct DualPath{pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 
 end
 
+"""
+    dual_path(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientDualSupport::DualSupport{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+
+Create a dual path from the given nodes and ambient dual support.
+"""
+function dual_path(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientDualSupport::DualSupport{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+    return DualPath{pathType, minOrMax}(nodes, ambientDualSupport)
+end
+
+"""
+    dual_path(d::DualCell{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+
+Create a dual path from a dual cell.
+"""
+function dual_path(d::DualCell{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+    return DualPath{pathType, minOrMax}([dual_vector(d)], ambient_dual_support(d))
+end
+
+"""
+    lift_from_node_and_fraction(h::DualPath, index::Int, t::QQFieldElem)
+
+Get the dual weight from a node of a dual path indexed by `index` and a fraction of the distance to the next node.
+"""
 function lift_from_node_and_fraction(h::DualPath, index::Int, t::QQFieldElem)
 
     @assert 1 <= index <= length(h.nodes) "Index out of bounds"

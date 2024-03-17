@@ -1,3 +1,8 @@
+"""
+    MixedCell{minOrMax}(dual_cells::Vector{DualCell})
+
+A mixed cell is a collection of dual cells of complementary dimension, all of which have the same min/max convention.
+"""
 struct MixedCell{minOrMax<:Union{typeof(min),typeof(max)}}
     dual_cells::Vector{DualCell}
 end

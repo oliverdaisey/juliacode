@@ -1,4 +1,8 @@
+"""
+    DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
 
+A dual cell of the given type, using the given convention.
+"""
 mutable struct DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
 
     ambientDualSupport::DualSupport{cellType}

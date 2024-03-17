@@ -49,6 +49,10 @@ function Base.iterate(s::DualSupport)
     return iterate(s[i] for i in 1:length(s))
 end
 
+function Base.show(io::IO, s::DualSupport)
+    print(io, "Dual support of type $(typeof(s).parameters[1]) with points $(s.points)")
+end
+
 """
     generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})
 
@@ -62,4 +66,12 @@ Generate the support of a tropical polynomial.
 """
 function generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})::Matrix{Int64}
     return transpose(hcat(collect(exponents(f))...))
+end
+
+function tropical_codim(S::DualSupport{Hypersurface})
+    return 1
+end
+
+function tropical_codim(S::DualSupport{<:Union{Linear, InvertedLinear}})
+    return length(findall(x -> x != 0, S[1]))
 end

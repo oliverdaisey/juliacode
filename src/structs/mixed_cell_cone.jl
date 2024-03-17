@@ -96,3 +96,7 @@ end
 function coefficients(C::MixedCellCone)::Vector{Vector{QQFieldElem}}
     return C.coefficients
 end
+
+function Base.show(io::IO, C::MixedCellCone)
+    print(io, "Mixed cell cone with facet inequalities $(coefficients(C))")
+end

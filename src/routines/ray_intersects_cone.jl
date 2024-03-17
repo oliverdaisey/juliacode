@@ -3,8 +3,6 @@
 
 Determines the value of ``t`` at which the ray ``u + tv`` with ``t in [0, 1]`` first intersects the boundary of the cone ``C``.
 
-In our problem we will have ``v = w_target - w_start`` as we try to walk the shortest path to the target.
-
 INPUTS:
 - ``C::Cone``: cone
 - ``u::Vector{QQFieldElem}``: start point of the ray, required to be in C
