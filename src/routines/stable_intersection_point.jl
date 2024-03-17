@@ -11,16 +11,16 @@ function stable_intersection_point(s::MixedCell)
     coefficientDifferences = Vector{Oscar.TropicalSemiringElem}()
     for si in dual_cells(s)
         activeDualSupport = active_support(si)
-        dualVector = dual_vector(si)[active_indices(si)]
+        dualWeight = dual_vector(si)[active_indices(si)]
         # only consider exponents with tropically nonzero coefficients
-        tropicallyNonZeroIndices = findall(!iszero, dualVector)
+        tropicallyNonZeroIndices = findall(!iszero, dualWeight)
         # iterate through all 2-element subsets of tropicallyNonZeroIndices
         for subset in subsets(tropicallyNonZeroIndices, 2)
             k, l = subset
             # coefficientDifferences of the new equation
             push!(exponentDifferences, activeDualSupport[k, :] - activeDualSupport[l, :])
             # constant of the new equation
-            push!(coefficientDifferences, dualVector[l] / dualVector[k])
+            push!(coefficientDifferences, dualWeight[l] / dualWeight[k])
         end
     end
 
