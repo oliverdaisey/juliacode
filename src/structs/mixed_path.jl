@@ -19,7 +19,7 @@ end
 function mixed_path_in_series(dualPaths::Vector{<:DualPath})
     
     # create the list of pointers
-    lengths = [length(dualPath.nodes) for dualPath in dualPaths]
+    lengths = [length(nodes(dualPath)) for dualPath in dualPaths]
 
     pointers = Vector{Vector{Int}}([[1 for i in 1:length(dualPaths)]])
     

@@ -36,19 +36,19 @@ function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
 end
 
 function ambient_support(s::MixedCell)
-    return vcat([dualCell.ambientDualSupport for dualCell in s.dual_cells]...)
-end
-
-function Base.show(io::IO, s::MixedCell)
-    print(io, "Mixed cell with dual cells $(s.dual_cells)")
-end
-
-function Base.copy(s::MixedCell)
-    return MixedCell{typeof(min)}(copy(s.dual_cells))
+    return vcat([ambient_support(dualCell) for dualCell in dual_cells(s)]...)
 end
 
 function dual_cells(s::MixedCell)
     return s.dual_cells
+end
+
+function Base.show(io::IO, s::MixedCell)
+    print(io, "Mixed cell with dual cells $(dual_cells(s))")
+end
+
+function Base.copy(s::MixedCell)
+    return MixedCell{typeof(min)}(copy(dual_cells(s)))
 end
 
 function mixed_vector(s::MixedCell)
