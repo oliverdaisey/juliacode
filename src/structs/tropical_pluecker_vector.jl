@@ -57,3 +57,11 @@ function rank(T::TropicalPlueckerVector)
     # this is the number of unique integers appearing in the pluecker indices
     return length(unique(vcat(T.pluecker_indices...)))
 end
+
+function pluecker_indices(T::TropicalPlueckerVector)
+    return T.pluecker_indices
+end
+
+function pluecker_entries(T::TropicalPlueckerVector)
+    return T.pluecker_entries
+end

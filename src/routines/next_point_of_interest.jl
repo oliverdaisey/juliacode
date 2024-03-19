@@ -50,7 +50,7 @@ function next_point_of_interest(T::MixedCellTracker)
     for i in 1:length(coefficients(C_s))
         if iszero(facet_point .* coefficients(C_s)[i])
             # intersects this facet, supports that change are indices of nonzero entries of coefficients of C_s
-            push!(support_indices, findall(!iszero, coefficients(C_s)[i]))
+            push!(support_indices, findall(iszero, coefficients(C_s)[i]))
         end
     end
 
