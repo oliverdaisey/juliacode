@@ -7,7 +7,7 @@ Our package will compute intersections of balanced polyhedral complexes of compl
 - Inverted linear spaces
 ### Introduction
 As an illustrative example of performing homotopy continuations with our package, we will compute all intersection points of the parametric tropical hypersurface $x_1x_2x_3 + wx_0^3$ in $\mathbb{R}^4$ with the tropical linear space arising from the Pluecker vector in $\mathbb{T}^{\binom{4}{2}}$ with all zeroes. The homotopy we follow initialises the system at $w=-3$ and moves to $w=3$, where along the way (at $w = 0$) the number of intersection points changes.
-### Setup
+### Setup Dual Supports
 All homotopy routines begin by specifying the dual supports of the balanced polyheral complexes whose intersection you want to track. For a hypersurface, one can specify a tropical polynomial directly:
 ```julia
 TT = tropical_semiring()
@@ -21,6 +21,7 @@ matroidVertices = [1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 1]
 linearSupport = DualSupport{Linear}(matroidVertices)
 invertedLinearSupport = DualSupport{InvertedLinear}(matroid_polytope_vertices(4, 2))
 ```
+### Define Paths
 Once all supports have been initialised, you can define the path data for the homotopy. Begin by specifying the initial and target weights for the supports, and optionally add intermediate weights (this is necessary when dealing with a tropical linear space, to avoid leaving the Dressian):
 ```julia
 fNodes = [TT.([0, -3]), TT.([0, 3])] # fNodes[1] is the initial dual weight vector
@@ -35,6 +36,7 @@ Once all paths of constitutent dual cells have been defined, you can specify the
 ```julia
 h = mixed_path_in_series([f_path, p_path])
 ```
+### Specify Dual Cells and Trackers
 With the path data defined, specify the dual cells that support the initial mixed cells. Here it is important to know your mixed cells for the initial weights in advance:
 ```julia
 fStartDual = dual_cell(fSupport, [1, 2], fNodes[1]) # [1, 2] are indices of fSupport that make up this dual cell
@@ -45,6 +47,7 @@ Finally, create a mixed cell tracker from the path data and mixed cell:
 ```julia
 tracker = mixed_cell_tracker(h, s)
 ```
+### Run Homotopy Continuation
 Finally, run the homotopy continuation:
 ```julia
 result = tropical_homotopy_continuation(tracker)
