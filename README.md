@@ -60,3 +60,4 @@ for mixedCell in result
     println(stable_intersection_point(mixedCell))
 end
 ```
+By running `tropical_homotopy_continuation(T)` for every initial mixed cell tracker T, all intersection points are obtained.

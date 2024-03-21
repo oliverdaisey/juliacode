@@ -30,3 +30,7 @@ end
 function mixed_path(T::MixedCellTracker)::MixedPath
     return T.mixed_path
 end
+
+function pointers(T::MixedCellTracker)
+    return pointers(mixed_path(T))
+end

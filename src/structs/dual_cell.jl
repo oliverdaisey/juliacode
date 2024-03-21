@@ -154,8 +154,8 @@ function dual_facets(m::DualCell)
     properDualFaces = DualCell[]
     for face in faces(cellHull, dim(cellHull) - 1)
         faceVertices = [Int.(v) for v in vertices(face)]
-        println(faceVertices)
-        println("is dual cell candidate: ", is_dual_cell_candidate(ambient_support(m), faceVertices))
+        # println(faceVertices)
+        # println("is dual cell candidate: ", is_dual_cell_candidate(ambient_support(m), faceVertices))
         if is_dual_cell_candidate(ambient_support(m), faceVertices)
             push!(properDualFaces, dual_cell(ambient_support(m), faceVertices, dual_weight(m)))
         end
