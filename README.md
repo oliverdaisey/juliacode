@@ -5,9 +5,9 @@ Our package will compute intersections of balanced polyhedral complexes of compl
 - Hypersurfaces
 - Linear spaces
 - Inverted linear spaces
-# Introduction
-As an illustrative example of performing homotopy continuations with our package, we will compute all intersection points of the parametric tropical hypersurface $V(x1*x2*x3 + w*x0^3)$ in $\mathbb{R}^4$ with the tropical linear space arising from the Pluecker vector in $\mathbb{T}^{\binom{n}{k}}$ with all zeroes. The homotopy we follow initialises the system at $w=-3$ and moves to $w=3$, where along the way (at $w = 0$) the number of intersection points changes.
-# Setup
+### Introduction
+As an illustrative example of performing homotopy continuations with our package, we will compute all intersection points of the parametric tropical hypersurface ${x1}*{x2}*{x3} + w*{x0}^3$ in $\mathbb{R}^4$ with the tropical linear space arising from the Pluecker vector in $\mathbb{T}^{\binom{4}{2}}$ with all zeroes. The homotopy we follow initialises the system at $w=-3$ and moves to $w=3$, where along the way (at $w = 0$) the number of intersection points changes.
+### Setup
 All homotopy routines begin by specifying the dual supports of the balanced polyheral complexes whose intersection you want to track. For a hypersurface, one can specify a tropical polynomial directly:
 ```julia
 TT = tropical_semiring()
@@ -55,11 +55,3 @@ for mixedCell in result
     println(stable_intersection_point(mixedCell))
 end
 ```
-## License
-Copyright 2024 Oliver Daisey and Yue Ren
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
