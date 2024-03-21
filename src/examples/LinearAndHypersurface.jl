@@ -7,8 +7,6 @@ We want to study how the intersection of the following tropical spaces behaves:
 - (1) the parametric tropical hypersurface V(x1*x2*x3 + w*x0^3) in RR^4
 - (2) the tropical linear space arising from the Pluecker vector in TT^(4c2) with all zeroes
 
-Since both spaces are invariant under translation by the all-ones vector, we project down to RR^3. This also gives a zero-dimensional intersection. 
-
 The homotopy we follow initialises the system at w=-3 and moves to w=3, where inbetween (at w = 0) the number of intersection points changes.
 """
 

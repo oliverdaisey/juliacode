@@ -65,3 +65,14 @@ end
 function pluecker_entries(T::TropicalPlueckerVector)
     return T.pluecker_entries
 end
+
+function matroid_polytope_vertices(n::Int, k::Int)
+    subsets = Oscar.subsets([i for i in 1:n], k)
+    indicator_matrix = zeros(Int, length(subsets), n)
+    for (i, subset) in enumerate(subsets)
+        for index in subset
+            indicator_matrix[i, index] = 1
+        end
+    end
+    return indicator_matrix
+end

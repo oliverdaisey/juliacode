@@ -11,6 +11,10 @@ mutable struct DualSupport{dualType<:DualType}
     function DualSupport{dualType}(points::Matrix{Int}) where {dualType<:DualType}
         return new{dualType}(points)
     end
+
+    function DualSupport{Hypersurface}(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})
+        return new{Hypersurface}(generate_support(f))
+    end
 end
 
 function points(s::DualSupport)

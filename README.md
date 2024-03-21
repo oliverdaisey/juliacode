@@ -1,28 +1,65 @@
 # TropicalHomotopies.jl
-🚀 A Julia package for tropical homotopy continuation on a wide range of tropical spaces, utilising OSCAR for much of its functionality. Features include fast computations of intersections of tropical hypersurfaces, tropical linear spaces, and inverted tropical linear spaces.
+🚀 A Julia package implementing the framework for tropical homotopy continuation on a wide range of tropical spaces, built on the foundations of [OSCAR](https://github.com/oscar-system/Oscar.jl).
 ## Usage
-Start by defining the inital data for the supports of the spaces whose intersection you want to track. For a hypersurface, one can specify the tropical polynomial directly:
+Our package will compute intersections of balanced polyhedral complexes of complementary dimension with a suitable dual picture. We implemented the following tropical spaces:
+- Hypersurfaces
+- Linear spaces
+- Inverted linear spaces
+# Introduction
+As an illustrative example of performing homotopy continuations with our package, we will compute all intersection points of the parametric tropical hypersurface $V(x1*x2*x3 + w*x0^3)$ in $\mathbb{R}^4$ with the tropical linear space arising from the Pluecker vector in $\mathbb{T}^{\binom{n}{k}}$ with all zeroes. The homotopy we follow initialises the system at $w=-3$ and moves to $w=3$, where along the way (at $w = 0$) the number of intersection points changes.
+# Setup
+All homotopy routines begin by specifying the dual supports of the balanced polyheral complexes whose intersection you want to track. For a hypersurface, one can specify a tropical polynomial directly:
 ```julia
 TT = tropical_semiring()
-R, (x, y) = PolynomialRing(TT, ["x", "y"])
-f = 1*x^4*y^2 + (-1)*x^2*y^4 + (-1)*x^3*y^3 + (-1)*x^2*y^2 + (1)*x^3*y + (1)*x^2*y^3 + (-1)*x*y^2 + (-1)*x*y + (1)*x + (-1)*y
-fSupport = DualSupport{Hypersurface}(generate_support(f))
+R, (x, y) = TT["x", "y"]
+f = x1 * x2 * x3 + TT(-3)*x0^3
+fSupport = DualSupport{Hypersurface}(f)
 ```
-For an intersection involving a (inverted) tropical linear space, construct the vertices of the matroid polytope and specify the inital data as follows:
+For an intersection involving a tropical linear space or an inversion thereof, either specify the vertices of the matroid polytope directly, or use the helper function:
 ```julia
 matroidVertices = [1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 1 0; 0 1 0 1; 0 0 1 1]
 linearSupport = DualSupport{Linear}(matroidVertices)
-invertedLinearSupport = DualSupport{InvertedLinear}(matroidVertices)
+invertedLinearSupport = DualSupport{InvertedLinear}(matroid_polytope_vertices(4, 2))
 ```
-Then define the path data for the homotopy. Begin by specifying the initial and target weights for the supports, and optionally add intermediate weights (this is necessary when dealing with a tropical linear space, to avoid leaving the Dressian). 
+Once all supports have been initialised, you can define the path data for the homotopy. Begin by specifying the initial and target weights for the supports, and optionally add intermediate weights (this is necessary when dealing with a tropical linear space, to avoid leaving the Dressian):
 ```julia
-f = x*y + 1
-fNodes = [TT.([0, 1]), TT.([1, 1])] # fNodes[1] is the initial dual weight vector
-fPath = DualPath{Hypersurface, typeof(min)}(fNodes, fSupport)
+fNodes = [TT.([0, -3]), TT.([0, 3])] # fNodes[1] is the initial dual weight vector
+fPath = dual_path(fNodes, fSupport)
 ```
-Then specify the dual cells that support the initial mixed cells.
+For a tropical linear space or inversion thereof, it is important to ensure that the order of the weights matches the order of the supports. in our example, we will consider the uniform matroid polytope (so all weights are 0):
 ```julia
-f_start_dual = DualCell{Hypersurface, typeof(min)}(fSupport, [1, 2], fNodes[1]) # [1, 2] are indices of fSupport that make up this dual cell
+linearNodes = [TT.([0, 0, 0, 0, 0, 0])]
+linearPath = dual_path(linearNodes, linearSupport)
+```
+Once all paths of constitutent dual cells have been defined, you can specify the mixed path that will be used in the homotopy. Here we wish to visit each node in series (i.e. first all nodes of the hypersurface, then all nodes of the linear space):
+```julia
+h = mixed_path_in_series([f_path, p_path])
+```
+With the path data defined, specify the dual cells that support the initial mixed cells. Here it is important to know your mixed cells for the initial weights in advance:
+```julia
+fStartDual = dual_cell(fSupport, [1, 2], fNodes[1]) # [1, 2] are indices of fSupport that make up this dual cell
+linearStartDual = dual_cell(linearSupport, [1, 2, 3], linearNodes[1]) # [1, 2, 3] are indices that make up a loopless facet
+s = mixed_cell([fStartDual, linearStartDual])
+```
+Finally, create a mixed cell tracker from the path data and mixed cell:
+```julia
+tracker = mixed_cell_tracker(h, s)
+```
+Finally, run the homotopy continuation:
+```julia
+result = tropical_homotopy_continuation(tracker)
+```
+That's it! Everything is automatic and noninteractive. The result will be an iterator of mixed cells dual to the intersection points of the hypersurface and linear space at the target weight vector. To compute the corresponding tropical intersection points, run the following:
+```julia
+for mixedCell in result
+    println(stable_intersection_point(mixedCell))
+end
 ```
 ## License
-This package (will be) released under the MIT License.
+Copyright 2024 Oliver Daisey and Yue Ren
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
