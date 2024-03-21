@@ -6,7 +6,7 @@ Our package will compute intersections of balanced polyhedral complexes of compl
 - Linear spaces
 - Inverted linear spaces
 ### Introduction
-As an illustrative example of performing homotopy continuations with our package, we will compute all intersection points of the parametric tropical hypersurface ${x1}*{x2}*{x3} + w*{x0}^3$ in $\mathbb{R}^4$ with the tropical linear space arising from the Pluecker vector in $\mathbb{T}^{\binom{4}{2}}$ with all zeroes. The homotopy we follow initialises the system at $w=-3$ and moves to $w=3$, where along the way (at $w = 0$) the number of intersection points changes.
+As an illustrative example of performing homotopy continuations with our package, we will compute all intersection points of the parametric tropical hypersurface ${x_1}*{x_2}*{x_3} + w*{x_0}^3$ in $\mathbb{R}^4$ with the tropical linear space arising from the Pluecker vector in $\mathbb{T}^{\binom{4}{2}}$ with all zeroes. The homotopy we follow initialises the system at $w=-3$ and moves to $w=3$, where along the way (at $w = 0$) the number of intersection points changes.
 ### Setup
 All homotopy routines begin by specifying the dual supports of the balanced polyheral complexes whose intersection you want to track. For a hypersurface, one can specify a tropical polynomial directly:
 ```julia
