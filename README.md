@@ -48,11 +48,13 @@ Finally, create a mixed cell tracker from the path data and mixed cell:
 tracker = mixed_cell_tracker(h, s)
 ```
 ### Run Homotopy Continuation
-Finally, run the homotopy continuation:
+Finally, run the homotopy continuation on the tracker:
 ```julia
 result = tropical_homotopy_continuation(tracker)
 ```
-That's it! Everything is automatic and noninteractive. The result will be an iterator of mixed cells dual to the intersection points of the hypersurface and linear space at the target weight vector. To compute the corresponding tropical intersection points, run the following:
+That's it! Everything is automatic and noninteractive.
+
+The result will be an iterator of mixed cells dual to those intersection points of the target tropical hypersurface and tropical linear space, obtainable by continuing the initial tracker's mixed cell through the homotopy. To compute the corresponding tropical intersection points, run the following:
 ```julia
 for mixedCell in result
     println(stable_intersection_point(mixedCell))
