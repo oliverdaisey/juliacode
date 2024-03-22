@@ -40,6 +40,9 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
 
     # {active_indices, extra_indices} form a partition of all indices of the supports
     # each extra index corresponds to a facet of the mixed cell cone
+    println("extraIndices = $extraIndices")
+    println("activeIndices = $activeIndices")
+    display(transpose(M))
     for extraIndex in extraIndices
         push!(coefficient_vects, cone_coefficients(activeIndices, extraIndex, transpose(M))) # transpose to fit previous implementation
     end
@@ -64,9 +67,13 @@ function cone_coefficients(mixed_cell_indices::Vector{Int}, extra_index::Int, M:
     # get submatrix defined by indices in I
     I = copy(mixed_cell_indices)
     push!(I, extra_index)
+    ν, nullSpace = Oscar.nullspace(M[:,I])
+    println(rank(M[:,I]))
+    @assert ν == 0 "Not a mixed cell"
     submatrix = M[:,I]
     # compute the null space
     ν, null_space = Oscar.nullspace(submatrix)
+    println(ν)
     @assert ν == 1 "The null space should be one dimensional"
 
     if null_space[ncols(null_space), 1] > 0
