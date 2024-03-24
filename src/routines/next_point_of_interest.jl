@@ -35,9 +35,9 @@ function next_point_of_interest(T::MixedCellTracker)
     # starting at `lift` and moving in the direction `direction`, when do we hit facet of C_s?
     # we want to find the smallest t such that lift + t*direction is on the facet of C_s
     t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, QQ.(direction))
+    println(t)
 
-
-    if t > 1 || isnothing(t)
+    if isnothing(t) || t > 1 
         # this means that the breaking point does not exist or takes us away from the path, so we should return the next node (no supports change)
         return partition_vector(lengths, h[2]), []
     end
@@ -47,10 +47,10 @@ function next_point_of_interest(T::MixedCellTracker)
 
     # get supports that change
     support_indices = []
-    for i in 1:length(coefficients(C_s))
-        if iszero(facet_point .* coefficients(C_s)[i])
+    for i in 1:length(inequalities(C_s))
+        if iszero(facet_point .* inequalities(C_s)[i])
             # intersects this facet, supports that change are indices of nonzero entries of coefficients of C_s
-            push!(support_indices, findall(iszero, coefficients(C_s)[i]))
+            push!(support_indices, findall(iszero, inequalities(C_s)[i]))
         end
     end
 

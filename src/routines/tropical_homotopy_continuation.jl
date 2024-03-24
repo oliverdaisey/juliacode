@@ -12,7 +12,7 @@ function tropical_homotopy_continuation(T::MixedCellTracker)
         for j in 1:length(dual_cells(mixed_cell(T)))
             dualCell = dual_cells(mixed_cell(T))[j]
             inflatedDualCell = inflation(dualCell, pointOfInterest[j], tropicalDrift)
-            deflatedVector = deflation(inflatedDualCell, drift)
+            deflatedVector = deflation(inflatedDualCell, tropicalDrift)
 
             # if we have a deflation, this support is changing
             if length(deflatedVector) > 0
@@ -22,6 +22,8 @@ function tropical_homotopy_continuation(T::MixedCellTracker)
                 push!(deflationsVector, [dualCell])
             end
         end
+
+        return deflationsVector
         
         # now we have all the new dual cells, combine them into all possible mixed cells at this point, and get the new trackers
         # TODO: write this. Then with all the new mixed cell trackers, run this function recursively

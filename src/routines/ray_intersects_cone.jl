@@ -25,9 +25,12 @@ nothing
 """
 function ray_intersects_cone(C::Polyhedron, u::Vector{QQFieldElem}, v::Vector{QQFieldElem})
 
+    println("u = $u, v = $v")
     @req u in C "u must be in the cone C"
     @req !iszero(v) "v must be nonzero"
     
+    # perturb u slightly along v
+    u = u + 1//1000000 * v
     intersection_points = []
     for F in facets(C)
         v_dot = dot(F.a , v)

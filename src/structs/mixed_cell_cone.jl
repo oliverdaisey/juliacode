@@ -38,6 +38,11 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
     extraIndices = [i for i in 1:nrows(M) if !(i in activeIndices)]
     coefficientVects = Vector{Vector{QQFieldElem}}()
 
+    println("activeIndices = $activeIndices")
+    println("extraIndices = $extraIndices")
+    println("M = ")
+    display(transpose(M))
+
     # {active_indices, extra_indices} form a partition of all indices of the supports
     # each extra index corresponds to (possibly many) hyperplanes defining the cone
     for extraIndex in extraIndices
@@ -45,6 +50,7 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
     end
 
     C = MixedCellCone(coefficientVects)
+    println(C)
 
     return C
 
@@ -68,24 +74,26 @@ function cone_inequalities(mixedCellIndices::Vector{Int}, extraIndex::Int, M::QQ
     # compute the null space
     ν, nullSpace = Oscar.nullspace(submatrix)
     # @assert ν == 1 "The null space should be one dimensional" # This is actually only true for the hypersurface case
-    println("Null space: ", nullSpace)
-    coefficients = [nullSpace[:,i] for i in 1:ncols(submatrix)]
-    println("Coefficients: ", coefficients)
+    coefficients = [nullSpace[:,i] for i in 1:ncols(nullSpace)]
+    inequalities = Vector{QQFieldElem}[]
+    for inequality in coefficients
+        # if index corresponding to extraIndex is > 0
+        if inequality[end] > 0
+            # we want the normal to point in the right direction
+            inequality = -inequality
+        end
     
-    if nullSpace[ncols(nullSpace), 1] > 0
-        # we want the normal to point in the right direction
-        nullSpace = -nullSpace
+        coefficientDict = Dict{Int, QQFieldElem}(
+            i => 0 for i in 1:ncols(M)
+        )
+    
+        for i in 1:length(I)
+            coefficientDict[I[i]] = inequality[i]
+        end
+        push!(inequalities, [coefficientDict[i] for i in 1:ncols(M)])
     end
 
-    coefficientDict = Dict{Int, QQFieldElem}(
-        i => 0 for i in 1:ncols(M)
-    )
-
-    for i in 1:length(I)
-        coefficientDict[I[i]] = nullSpace[i]
-    end
-
-    return [coefficientDict[i] for i in 1:ncols(M)]
+    return inequalities
 end
 
 function mixed_cell_cone_to_polyhedron(C::MixedCellCone)::Polyhedron

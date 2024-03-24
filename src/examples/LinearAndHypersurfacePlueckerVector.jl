@@ -1,16 +1,15 @@
 include("../main.jl")
 
 TT = tropical_semiring()
-R, (x1, x2, x3) = TT["x1", "x2", "x3"]
+R, (x1, x2, x3, x4) = TT["x1", "x2", "x3", "x4"]
 
-f = x1*x2*x3 + 2
-
+f = x1*x2 + x3*x4
 fSupport = DualSupport{Hypersurface}(f)
-fNodes = [TT.([0, 2]), TT.([0, 6])] # a path is given by a sequence of nodes
+fNodes = [TT.([0,3]), TT.([0, 5])] # a path is given by a sequence of nodes
 fPath = dual_path(fNodes, fSupport)
 
 
-pSupport = DualSupport{Linear}([1 1 0; 1 0 1; 1 0 0; 0 1 1; 0 1 0; 0 0 1])
+pSupport = DualSupport{Linear}([-1 -1 0 0; -1 0 -1 0; -1 0 0 -1; 0 -1 -1 0; 0 -1 0 -1; 0 0 -1 -1])
 pNodes = [TT.([2, 0, 0, 0, 0, 0])] # the tropical linear space is not moving
 pPath = dual_path(pNodes, pSupport)
 
@@ -23,4 +22,4 @@ s = mixed_cell([fStartDual, pStartDual])
 
 t = mixed_cell_tracker(h, s)
 
-
+pt_of_interest, supports = next_point_of_interest(t)
