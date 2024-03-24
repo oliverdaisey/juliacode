@@ -2,8 +2,11 @@
 """
     next_point_of_interest(T::MixedCellTracker)
 
-Given a mixed cell tracker, returns the next point of interest (either the next node, or the breaking point if it exists), along with the supports that change.
+Given a mixed cell tracker, returns the next point of interest (either the next node, or the breaking point if it exists, or `nothing` otherwise), along with the supports that change.
 
+Has a side effect: Changes the dual weights in the dual cells of the mixed cell `T` is tracking, to the point of interest (if it exists). Also updates the path of the mixed cell tracker when required. (Basically, this function is doing too much, for now).
+
+Do not call this function unless you are actually intending to traverse the mixed path!
 """
 function next_point_of_interest(T::MixedCellTracker)
 
@@ -14,7 +17,7 @@ function next_point_of_interest(T::MixedCellTracker)
 
     lengths = length.(ambient_support.(dual_cells(mixed_cell(T))))
 
-    # deal with the silly case that the mixed path only has one node left
+    # deal with case that the mixed path only has one node left
     if pointer_index == length(pointers(h))
         return nothing, [] # this means that this mixed cell tracker is done
     end
@@ -24,7 +27,7 @@ function next_point_of_interest(T::MixedCellTracker)
     n = length(dual_path_pointers)
 
     # get the lift at this time
-    lift = vcat([lift_from_node_and_fraction(dual_paths(h)[i], dual_path_pointers[i], fraction) for i in 1:n]...)
+    lift = QQ.(vcat(mixed_vector(T)...))
 
     # get direction path is travelling in dual space
     next_dual_path_pointers = pointers(h)[pointer_index+1]
@@ -35,11 +38,13 @@ function next_point_of_interest(T::MixedCellTracker)
     # starting at `lift` and moving in the direction `direction`, when do we hit facet of C_s?
     # we want to find the smallest t such that lift + t*direction is on the facet of C_s
     t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, QQ.(direction))
-    println(t)
 
     if isnothing(t) || t > 1 
         # this means that the breaking point does not exist or takes us away from the path, so we should return the next node (no supports change)
-        return partition_vector(lengths, h[2]), []
+        partitionedVector = partition_vector(lengths, h[2])
+        update_dual_weights!(T, partitionedVector)
+        update_path(T)
+        return partitionedVector, []
     end
 
     # otherwise we are in the case that the breaking point exists, work out which supports change
@@ -57,6 +62,8 @@ function next_point_of_interest(T::MixedCellTracker)
     # make sure support_indices is unique
     support_indices = unique(vcat(support_indices...))
 
+    # update dual weights
+    update_dual_weights!(T, partition_vector(lengths, TT.(facet_point)))
     return partition_vector(lengths, TT.(facet_point)), support_indices
 
 end
@@ -73,4 +80,16 @@ function partition_vector(lengths::Vector{Int}, v::Vector{Oscar.TropicalSemiring
     end
     return partitionedVector
 
+end
+
+function update_dual_weights!(T::MixedCellTracker, newDualWeights::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
+    s = mixed_cell(T)
+    for i in 1:length(dual_cells(s))
+        s.dual_cells[i].dualWeight = newDualWeights[i]
+    end
+end
+
+function update_path(T::MixedCellTracker)
+    # pop the first pointer from the path
+    mixed_path(T).pointers = mixed_path(T).pointers[2:end]
 end

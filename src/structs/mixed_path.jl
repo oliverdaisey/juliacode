@@ -5,7 +5,7 @@ struct Series <: Strategy end
 struct Step <: Strategy end
 struct Parallel <: Strategy end
 
-struct MixedPath
+mutable struct MixedPath
 
     pointers::Vector{Vector{Int}}
     dualPaths::Vector{<:DualPath}

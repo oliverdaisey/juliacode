@@ -25,13 +25,10 @@ nothing
 """
 function ray_intersects_cone(C::Polyhedron, u::Vector{QQFieldElem}, v::Vector{QQFieldElem})
 
-    println("u = $u, v = $v")
     @req u in C "u must be in the cone C"
     @req !iszero(v) "v must be nonzero"
     
-    # perturb u slightly along v
-    u = u + 1//1000000 * v
-    intersection_points = []
+    intersectionTimes = []
     for F in facets(C)
         v_dot = dot(F.a , v)
         if v_dot == 0
@@ -39,17 +36,17 @@ function ray_intersects_cone(C::Polyhedron, u::Vector{QQFieldElem}, v::Vector{QQ
             continue
         end
         t = dot(-F.a , u) / v_dot
-        if t >= 0
-            push!(intersection_points, t)
+        if t > 0
+            push!(intersectionTimes, t)
         end
     end
     
-    if isempty(intersection_points)
+    if isempty(intersectionTimes)
         # nothing satisfied the criteria, so ray does not intersect
         return nothing
     else
-        # intersection point is precisely the minimum of the intersection points
-        return minimum(intersection_points)
+        # intersection time is precisely the minimum of the intersection points
+        return minimum(intersectionTimes)
     end
 
 

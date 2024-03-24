@@ -57,6 +57,10 @@ function Base.show(io::IO, s::DualSupport)
     print(io, "Dual support of type $(typeof(s).parameters[1]) with points $(s.points)")
 end
 
+function Base.:(==)(s1::DualSupport, s2::DualSupport)
+    return s1.points == s2.points && typeof(s1) == typeof(s2)
+end
+
 """
     generate_support(f::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}})
 

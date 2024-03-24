@@ -53,6 +53,10 @@ function dual_cell(S::DualSupport{cellType}, s::Vector{Vector{Int}}, dualWeight:
     return DualCell{cellType, typeof(min)}(S, activeIndices, dualWeight)
 end
 
+function dual_cell(S::DualSupport{cellType}, activeIndices::Vector{Int}, dualWeight::Vector{<:Oscar.TropicalSemiringElem{typeof(min)}}) where (cellType<:DualType)
+
+    return DualCell{cellType, typeof(min)}(S, activeIndices, dualWeight)
+end
 
 """
     dual_cell(ambientDualSupport::Matrix{Int}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}, cellType::Symbol, ::typeof(max)=max)

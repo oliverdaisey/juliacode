@@ -38,10 +38,6 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
     extraIndices = [i for i in 1:nrows(M) if !(i in activeIndices)]
     coefficientVects = Vector{Vector{QQFieldElem}}()
 
-    println("activeIndices = $activeIndices")
-    println("extraIndices = $extraIndices")
-    println("M = ")
-    display(transpose(M))
 
     # {active_indices, extra_indices} form a partition of all indices of the supports
     # each extra index corresponds to (possibly many) hyperplanes defining the cone
@@ -50,7 +46,6 @@ function mixed_cell_cone(s::MixedCell)::MixedCellCone
     end
 
     C = MixedCellCone(coefficientVects)
-    println(C)
 
     return C
 

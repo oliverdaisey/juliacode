@@ -33,7 +33,6 @@ function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
     n = ambient_dim(dualCells[1])
 
     @assert sum(tropical_codim.(dualCells)) + tropical_lineality_dim(dualCells) == n "Dual cells must have complementary dimensions"
-    println("tropical_codim = $(sum(tropical_codim.(dualCells))), tropical_lineality_dim = $(tropical_lineality_dim(dualCells)), n = $n")
 end
 
 function ambient_support(s::MixedCell)
@@ -53,7 +52,7 @@ function Base.copy(s::MixedCell)
 end
 
 function mixed_vector(s::MixedCell)
-    return dual_vector.(dual_cells(s))
+    return dual_weight.(dual_cells(s))
 end
 
 function tropical_lineality_dim(dualCells::Vector{<: DualCell})

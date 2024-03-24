@@ -4,18 +4,19 @@ function inflation(dualCell::DualCell, breakingPoint::Vector{Oscar.TropicalSemir
     # create all dual cells with respect to the breaking point
     breakingPointDualCells = dual_cells(ambient_support(dualCell), breakingPoint)
 
-    epsilon = QQ(1//1000000)
-    driftedCenter = center(dualCell) - epsilon*drift
+    epsilon = QQ(1//1000)
 
     inflationDualCells = DualCell[]
 
+    # caution: it is possible to get stuck in this loop
     while length(inflationDualCells) == 0
+        epsilon *= epsilon # in case epsilon is not sufficiently small
+        driftedCenter = center(dualCell) - epsilon*drift
         for s in breakingPointDualCells
             if driftedCenter in convex_hull(s)
                 push!(inflationDualCells, s)
             end
         end
-        epsilon *= epsilon # in case epsilon is not sufficiently small
     end
 
     @assert length(inflationDualCells) == 1 "The inflation dual cell is not unique."

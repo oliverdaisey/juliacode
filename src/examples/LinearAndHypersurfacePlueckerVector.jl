@@ -22,4 +22,9 @@ s = mixed_cell([fStartDual, pStartDual])
 
 t = mixed_cell_tracker(h, s)
 
-pt_of_interest, supports = next_point_of_interest(t)
+# compute all the mixed cells at the end
+finalMixedCells = tropical_homotopy_continuation(t)
+println("Completed homotopy continuation, found $(length(finalMixedCells)) mixed cells")
+for mixedCell in finalMixedCells
+    println("Tropical transverse intersection point = $(stable_intersection_point(mixedCell))")
+end

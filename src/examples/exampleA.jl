@@ -1,10 +1,4 @@
-using Oscar
-using Revise
-
-include("cayley_embedding.jl")
-include("type_aliases.jl")
-
-T = tropical_semiring()
+include("../main.jl")
 
 function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
 
@@ -38,7 +32,6 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
         end
 
         push!(F_start, l_i)
-        println(l_i)
 
     end
 
@@ -68,7 +61,6 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
     for i in 1:n-k
         M[i+1, k+1+i] = 1
     end
-    println(M)
     σ_p = convex_hull(M)
     S = sum(σ_i for σ_i in Σ) + σ_p
     

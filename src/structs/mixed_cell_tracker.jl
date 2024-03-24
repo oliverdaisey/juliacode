@@ -20,7 +20,7 @@ function check_mixed_cell_tracker_inputs(mixed_path::MixedPath, mixed_cell::Mixe
 end
 
 function Base.show(io::IO, T::MixedCellTracker)
-    print(io, "Tracker for a mixed cell along a mixed path")
+    print(io, "Tracker for a mixed cell along a mixed path with mixed vector $(mixed_vector(T))")
 end
 
 function mixed_cell(T::MixedCellTracker)::MixedCell
@@ -29,6 +29,10 @@ end
 
 function mixed_path(T::MixedCellTracker)::MixedPath
     return T.mixed_path
+end
+
+function mixed_vector(T::MixedCellTracker)
+    return mixed_vector(mixed_cell(T))
 end
 
 function pointers(T::MixedCellTracker)
