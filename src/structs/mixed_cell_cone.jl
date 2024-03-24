@@ -67,14 +67,16 @@ function cone_coefficients(mixed_cell_indices::Vector{Int}, extra_index::Int, M:
     # get submatrix defined by indices in I
     I = copy(mixed_cell_indices)
     push!(I, extra_index)
-    ν, nullSpace = Oscar.nullspace(M[:,I])
-    println(rank(M[:,I]))
-    @assert ν == 0 "Not a mixed cell"
     submatrix = M[:,I]
     # compute the null space
+    println("submatrix is given by")
+    display(submatrix)
+    println("\n")
     ν, null_space = Oscar.nullspace(submatrix)
     println(ν)
+    println(null_space)
     @assert ν == 1 "The null space should be one dimensional"
+    
 
     if null_space[ncols(null_space), 1] > 0
         # we want the normal to point in the right direction
