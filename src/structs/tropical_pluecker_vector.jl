@@ -12,6 +12,23 @@ struct TropicalPlueckerVector{minOrMax<:Union{typeof(min),typeof(max)}}
     end
 end
 
+struct LazyTropicalPlueckerVector{minOrMax<:Union{typeof(min), typeof(max)}}
+    realisation::Matrix{Int}
+    nu::TropicalSemiringMap{minOrMax}
+    tropicalPlueckerVector::Dict{Vector{Int}, Oscar.TropicalSemiringElem{minOrMax}}
+end
+
+function Base.getindex(T::LazyTropicalPlueckerVector, index::Vector{Int})
+    if haskey(T.tropicalPlueckerVector, index)
+        return T.tropicalPlueckerVector[index]
+    else
+        # compute the entry
+        entry = det(T.nu.(T.realisation[:, index]))
+        T.tropicalPlueckerVector[index] = entry
+        return entry
+    end
+end
+
 import Oscar.tropical_pluecker_vector
 
 """
