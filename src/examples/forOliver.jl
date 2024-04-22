@@ -57,8 +57,10 @@ linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 -c3*w1 + w7 + k6//(k7 + k8)*w13,
                 -c4*w1 + w6 + k17//(k18 + k19)*w9,
                 -c5*w1 + w2 + k24//k25*w4]
+Kt, t = rational_function_field(QQ, "t")
+nu = tropical_semiring_map(Kt, t)
 
-S,(x1,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19) = polynomial_ring(QQ,["x1","x3","x4","x5","x6","x7","x8","x9","x10","x11","x12","w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19"])
+S,(x1,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19) = polynomial_ring(Kt,["x1","x3","x4","x5","x6","x7","x8","x9","x10","x11","x12","w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19"])
 
 binomialSystem = [w1 - 1,
                   -x12 + w2,
@@ -79,3 +81,13 @@ binomialSystem = [w1 - 1,
                   -x3*x6 + w17,
                   -x1 + w18,
                   -x1*x4 + w19]
+
+tropicalBinomialSystem = tropical_polynomial.(binomialSystem, Ref(nu))
+
+perturbedTropicalBinomialSystem = []
+M = 99 # max random int
+for poly in tropicalBinomialSystem
+    push!(perturbedTropicalBinomialSystem, sum(rand(-M:M, length(vars(poly))).*vars(poly)))
+end
+
+liftedPerturbedTropicalBinomialSystem = random_lift.(Ref(nu), perturbedTropicalBinomialSystem, Ref(S))

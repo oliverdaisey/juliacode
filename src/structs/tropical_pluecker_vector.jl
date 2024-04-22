@@ -23,7 +23,7 @@ function Base.getindex(T::LazyTropicalPlueckerVector, index::Vector{Int})
         return T.tropicalPlueckerVector[index]
     else
         # compute the entry
-        entry = det(T.nu.(T.realisation[:, index]))
+        entry = nu(det(T.realisation[:, index]))
         T.tropicalPlueckerVector[index] = entry
         return entry
     end
