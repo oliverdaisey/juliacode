@@ -1,4 +1,5 @@
 using Oscar
+include("../routines/random_lift.jl")
 
 
 # choose random parameters
@@ -57,6 +58,8 @@ linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 -c4*w1 + w6 + k17//(k18 + k19)*w9,
                 -c5*w1 + w2 + k24//k25*w4]
 
+dimensionOfLinearSystem = dim(ideal(linearSystem))
+
 binomialSystem = [w1 - κ,
                   -x12 + w2,
                   -x11 + w3,
@@ -84,20 +87,32 @@ M = 99 # max random int
 
 TT = tropical_semiring()
 linearisedBinomialSystem = map(f -> sum(vars(f)) + constant_coefficient(f), tropicalBinomialSystem)
-perturbedTropicalBinomialSystem = map_coefficients.(x -> TT(rand(-M:M)), linearisedBinomialSystem)
 
-liftedPerturbedTropicalBinomialSystem = random_lift.(Ref(nu), perturbedTropicalBinomialSystem, Ref(S))
+println("Beginning loop")
+flats = []
+while length(flats) < dimensionOfLinearSystem
+    perturbedTropicalBinomialSystem = map_coefficients.(c -> TT(rand(Int8)), linearisedBinomialSystem)
 
-system = push!(liftedPerturbedTropicalBinomialSystem, linearSystem...)
+    liftedPerturbedTropicalBinomialSystem = random_lift.(Ref(nu), perturbedTropicalBinomialSystem, Ref(S))
 
-rows = [[coeff(system[i], gens(S)[j]) for j in 1:length(gens(S))] for i in 1:length(system)]
-A = matrix([rows[i] for i in 1:length(system)])
-solution = kernel(A, side=:right)
+    system = push!(liftedPerturbedTropicalBinomialSystem, linearSystem...)
 
-valuationOfSolution = nu.(solution) # this will solve `tropicalSystem`
+    rows = [[coeff(system[i], gens(S)[j]) for j in 1:length(gens(S))] for i in 1:length(system)]
+    A = matrix([rows[i] for i in 1:length(system)])
+    solution = kernel(A, side=:right)
 
-tropicalSystem = []
-push!(tropicalSystem, perturbedTropicalBinomialSystem...)
-push!(tropicalSystem, linearSystem...)
+    valuationOfSolution = nu.(solution) # this will solve `tropicalSystem`
 
-tropicalSystem
+    tropicalSystem = []
+    push!(tropicalSystem, perturbedTropicalBinomialSystem...)
+    push!(tropicalSystem, linearSystem...)
+
+    tropicalSystem
+
+    # flatten valuationOfSolution
+    valuationOfSolution = [valuationOfSolution...]
+    global flats = [findall(x -> x == val, valuationOfSolution) for val in unique(valuationOfSolution)]
+end
+activeSupport = collect(Iterators.product(flats...))
+activeSupport = reshape(activeSupport, length(activeSupport))
+# next steps: compute drift by perturbing ε along the path and finding tropical intersection point as function of ε
