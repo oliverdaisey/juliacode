@@ -40,11 +40,10 @@ c3 = rand(-b:b)
 c4 = rand(-b:b)
 c5 = rand(-b:b)
 
+Kt, t = rational_function_field(QQ, "t")
+nu = tropical_semiring_map(Kt, t)
 
-
-R,(w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19) = polynomial_ring(QQ,["w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19"])
-
-
+S,(x1,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19, κ) = polynomial_ring(Kt,["x1","x3","x4","x5","x6","x7","x8","x9","x10","x11","x12","w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19", "κ"])
 
 linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 k29*w8 - k28*w12 - (k6*k8)//(k7 + k8)*w13 + (k1*k3*k5)//(k2*k4 + k2*k5)*w19,
@@ -57,12 +56,8 @@ linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 -c3*w1 + w7 + k6//(k7 + k8)*w13,
                 -c4*w1 + w6 + k17//(k18 + k19)*w9,
                 -c5*w1 + w2 + k24//k25*w4]
-Kt, t = rational_function_field(QQ, "t")
-nu = tropical_semiring_map(Kt, t)
 
-S,(x1,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19) = polynomial_ring(Kt,["x1","x3","x4","x5","x6","x7","x8","x9","x10","x11","x12","w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19"])
-
-binomialSystem = [w1 - 1,
+binomialSystem = [w1 - κ,
                   -x12 + w2,
                   -x11 + w3,
                   -x11*x12 + w4,
@@ -83,11 +78,26 @@ binomialSystem = [w1 - 1,
                   -x1*x4 + w19]
 
 tropicalBinomialSystem = tropical_polynomial.(binomialSystem, Ref(nu))
+# tropicalLinearSystem = tropical_polynomial.(linearSystem, Ref(nu))
 
-perturbedTropicalBinomialSystem = []
 M = 99 # max random int
-for poly in tropicalBinomialSystem
-    push!(perturbedTropicalBinomialSystem, sum(rand(-M:M, length(vars(poly))).*vars(poly)))
-end
+
+TT = tropical_semiring()
+linearisedBinomialSystem = map(f -> sum(vars(f)) + constant_coefficient(f), tropicalBinomialSystem)
+perturbedTropicalBinomialSystem = map_coefficients.(x -> TT(rand(-M:M)), linearisedBinomialSystem)
 
 liftedPerturbedTropicalBinomialSystem = random_lift.(Ref(nu), perturbedTropicalBinomialSystem, Ref(S))
+
+system = push!(liftedPerturbedTropicalBinomialSystem, linearSystem...)
+
+rows = [[coeff(system[i], gens(S)[j]) for j in 1:length(gens(S))] for i in 1:length(system)]
+A = matrix([rows[i] for i in 1:length(system)])
+solution = kernel(A, side=:right)
+
+valuationOfSolution = nu.(solution) # this will solve `tropicalSystem`
+
+tropicalSystem = []
+push!(tropicalSystem, perturbedTropicalBinomialSystem...)
+push!(tropicalSystem, linearSystem...)
+
+tropicalSystem
