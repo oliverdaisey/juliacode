@@ -80,6 +80,7 @@ binomialSystem = [w1 - κ,
                   -x1 + w18,
                   -x1*x4 + w19]
 
+totalDegrees = [total_degree(f) for f in binomialSystem]
 tropicalBinomialSystem = tropical_polynomial.(binomialSystem, Ref(nu))
 # tropicalLinearSystem = tropical_polynomial.(linearSystem, Ref(nu))
 
@@ -90,8 +91,10 @@ linearisedBinomialSystem = map(f -> sum(vars(f)) + constant_coefficient(f), trop
 
 println("Beginning loop")
 flats = []
+perturbedTropicalBinomialSystem = []
+solution = []
 while length(flats) < dimensionOfLinearSystem
-    perturbedTropicalBinomialSystem = map_coefficients.(c -> TT(rand(Int8)), linearisedBinomialSystem)
+    global perturbedTropicalBinomialSystem = map_coefficients.(c -> TT(rand(Int8)), linearisedBinomialSystem)
 
     liftedPerturbedTropicalBinomialSystem = random_lift.(Ref(nu), perturbedTropicalBinomialSystem, Ref(S))
 
@@ -99,20 +102,33 @@ while length(flats) < dimensionOfLinearSystem
 
     rows = [[coeff(system[i], gens(S)[j]) for j in 1:length(gens(S))] for i in 1:length(system)]
     A = matrix([rows[i] for i in 1:length(system)])
-    solution = kernel(A, side=:right)
-
-    valuationOfSolution = nu.(solution) # this will solve `tropicalSystem`
+    global solution = nu.(kernel(A, side=:right))
 
     tropicalSystem = []
     push!(tropicalSystem, perturbedTropicalBinomialSystem...)
     push!(tropicalSystem, linearSystem...)
 
-    tropicalSystem
-
     # flatten valuationOfSolution
-    valuationOfSolution = [valuationOfSolution...]
-    global flats = [findall(x -> x == val, valuationOfSolution) for val in unique(valuationOfSolution)]
+    global solution = [solution...]
+    global flats = [findall(x -> x == val, solution) for val in unique(solution)]
 end
 activeSupport = collect(Iterators.product(flats...))
 activeSupport = reshape(activeSupport, length(activeSupport))
 # next steps: compute drift by perturbing ε along the path and finding tropical intersection point as function of ε
+
+startingBinomialSystem = perturbedTropicalBinomialSystem.^totalDegrees
+
+# construct the vector of supports
+paths = []
+for i in 1:length(startingBinomialSystem)
+    startingPoly = startingBinomialSystem[i]
+    targetPoly = tropicalBinomialSystem[i]
+
+    polySupport = collect(exponents(startingPoly))
+
+    startingCoeffs = [coeff(startingPoly, monomial) for monomial in polySupport]
+    targetCoeffs = [coeff(targetPoly, monomial) for monomial in polySupport]
+
+    push!(paths, [startingCoeffs, targetCoeffs])
+end
+
