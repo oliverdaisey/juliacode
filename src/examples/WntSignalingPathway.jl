@@ -1,5 +1,5 @@
 using Oscar
-include("../routines/random_lift.jl")
+include("../main.jl")
 
 
 # choose random parameters
@@ -87,7 +87,8 @@ tropicalBinomialSystem = tropical_polynomial.(binomialSystem, Ref(nu))
 M = 99 # max random int
 
 TT = tropical_semiring()
-linearisedBinomialSystem = map(f -> sum(vars(f)) + constant_coefficient(f), tropicalBinomialSystem)
+# linearisedBinomialSystem = map(f -> sum(vars(f)) + constant_coefficient(f), tropicalBinomialSystem)
+linearisedBinomialSystem = map(f -> sum(vars(f)) + 1, tropicalBinomialSystem)
 
 println("Beginning loop")
 flats = []
@@ -131,4 +132,29 @@ for i in 1:length(startingBinomialSystem)
 
     push!(paths, [startingCoeffs, targetCoeffs])
 end
+
+# construct vector of directions for each path
+directions = [path[2] ./ path[1] for path in paths]
+
+# if a direction contains infinity, set all infinities in that direction to 1 and all non-infinities to 0
+for vec in directions
+    if any(isinf.(vec))
+        # this direction contains infinity
+        for i in 1:length(vec)
+            if isinf(vec[i])
+                vec[i] = TT(1)
+            else
+                vec[i] = TT(0)
+            end
+        end
+    end
+end
+
+# scale the directions by ε
+ε = TT(1//10000)
+directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
+
+
+# CONSTRUCT DUAL SUPPORTS
+hypersurfaceDualSupports = DualSupport{Hypersurface}.(linearisedBinomialSystem)
 
