@@ -44,7 +44,7 @@ c5 = rand(-b:b)
 Kt, t = rational_function_field(QQ, "t")
 nu = tropical_semiring_map(Kt, t)
 
-S,(x1,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19, κ) = polynomial_ring(Kt,["x1","x3","x4","x5","x6","x7","x8","x9","x10","x11","x12","w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19", "κ"])
+S,(x1,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15, w16, w17, w18, w19) = polynomial_ring(Kt,["x1","x3","x4","x5","x6","x7","x8","x9","x10","x11","x12","w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10", "w11", "w12", "w13", "w14", "w15", "w16", "w17", "w18", "w19"])
 
 linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 k29*w8 - k28*w12 - (k6*k8)//(k7 + k8)*w13 + (k1*k3*k5)//(k2*k4 + k2*k5)*w19,
@@ -60,7 +60,7 @@ linearSystem = [k27*w16 - (k1*k26)//k2*w18,
 
 dimensionOfLinearSystem = dim(ideal(linearSystem))
 
-binomialSystem = [w1 - κ,
+binomialSystem = [w1 - 1,
                   -x12 + w2,
                   -x11 + w3,
                   -x11*x12 + w4,
@@ -101,7 +101,7 @@ while length(flats) < dimensionOfLinearSystem
 
     system = push!(liftedPerturbedTropicalBinomialSystem, linearSystem...)
 
-    rows = [[coeff(system[i], gens(S)[j]) for j in 1:length(gens(S))] for i in 1:length(system)]
+    rows = [[[coeff(system[i], gens(S)[j]) for j in 1:length(gens(S))]..., constant_coefficient(system[i])] for i in 1:length(system)]
     A = matrix([rows[i] for i in 1:length(system)])
     global solution = nu.(kernel(A, side=:right))
 
@@ -109,12 +109,38 @@ while length(flats) < dimensionOfLinearSystem
     push!(tropicalSystem, perturbedTropicalBinomialSystem...)
     push!(tropicalSystem, linearSystem...)
 
-    # flatten valuationOfSolution
-    global solution = [solution...]
+    # flatten solution
+    global solution = [solution...][1:length(tropicalSystem)]
     global flats = [findall(x -> x == val, solution) for val in unique(solution)]
+
 end
 activeSupport = collect(Iterators.product(flats...))
 activeSupport = reshape(activeSupport, length(activeSupport))
+# compute indicator vectors
+indicatorVectors = Vector{Int}[]
+for pt in activeSupport
+    indicatorVector = [1 for i in 1:length(solution)]
+    for i in 1:length(solution)
+        if i in pt
+            indicatorVector[i] = 0
+        end
+    end
+    push!(indicatorVectors, indicatorVector)
+end
+
+# which subset of indicatorVectors is a basis?
+M = matrix(QQ, indicatorVectors)
+redundantIndices = []
+allowedIndices = [j for j in 1:size(M)[1]]
+for i in 1:size(M)[1]
+    indices = [j for j in allowedIndices if j != i]
+    submatrix = M[indices, :]
+    if rank(submatrix) == rank(M)
+        push!(redundantIndices, i)
+        filter!(j -> j != i, allowedIndices)
+    end
+end
+
 # next steps: compute drift by perturbing ε along the path and finding tropical intersection point as function of ε
 
 startingBinomialSystem = perturbedTropicalBinomialSystem.^totalDegrees
@@ -158,3 +184,20 @@ directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
 # CONSTRUCT DUAL SUPPORTS
 hypersurfaceDualSupports = DualSupport{Hypersurface}.(linearisedBinomialSystem)
 
+# choose 11 random indices from 12:30 without repeat
+for i in 1:100000
+    indices = randperm(30)[12:end]
+    v = Int.(zeros(30))
+    for i in indices
+        v[i] = 1
+    end
+    if v in indicatorVectors[allowedIndices]
+        continue
+    end
+    if sum(v.*solution) >= -975
+        println("Found a solution ", v, " with drift ", sum(v.*solution))
+        break
+    end
+    println("Iteration number ", i)
+end
+println("If nothing was printed, no solution was found.")
