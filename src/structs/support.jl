@@ -17,6 +17,17 @@ mutable struct DualSupport{dualType<:DualType}
     end
 end
 
+mutable struct LazyDualSupport{dualType<:Union{Linear, InvertedLinear}}
+
+    # in this case, points are not explicitly given, but there should be a way to generate them
+    n::Int
+    k::Int
+
+    function LazyDualSupport{dualType}(n::Int, k::Int) where {dualType<:Union{Linear, InvertedLinear}}
+        return new{dualType}(n, k)
+    end
+end
+
 function points(s::DualSupport)
     return s.points
 end

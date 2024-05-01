@@ -141,6 +141,33 @@ for i in 1:size(M)[1]
     end
 end
 
+# VERIFY THAT LINEAR DUAL SUPPORT IS CORRECT
+# choose 11 random indices from 12:30 without repeat
+solution = QQ.(solution)
+@assert length(unique([sum(v.*solution) for v in indicatorVectors])) == 1 "this is not a dual face"
+theMinimum = sum(indicatorVectors[1].*solution)
+println("The minimum is ", theMinimum)
+numOfIterations = 100000
+for i in 1:numOfIterations
+    indices = randperm(19)
+    v = Int.(zeros(30))
+    for i in indices
+        v[11+i] = 1
+    end
+    if v in indicatorVectors[allowedIndices]
+        continue
+    end
+    if sum(v.*solution) >= theMinimum
+        println("Found a solution ", v, " that evaluates to ", sum(v.*solution))
+        break
+    end
+    println("Iteration number ", i)
+    if i == numOfIterations
+        println("No solution found")
+    end
+end
+
+
 # next steps: compute drift by perturbing ε along the path and finding tropical intersection point as function of ε
 
 startingBinomialSystem = perturbedTropicalBinomialSystem.^totalDegrees
@@ -158,6 +185,8 @@ for i in 1:length(startingBinomialSystem)
 
     push!(paths, [startingCoeffs, targetCoeffs])
 end
+
+
 
 # construct vector of directions for each path
 directions = [path[2] ./ path[1] for path in paths]
@@ -183,21 +212,3 @@ directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
 
 # CONSTRUCT DUAL SUPPORTS
 hypersurfaceDualSupports = DualSupport{Hypersurface}.(linearisedBinomialSystem)
-
-# choose 11 random indices from 12:30 without repeat
-for i in 1:100000
-    indices = randperm(30)[12:end]
-    v = Int.(zeros(30))
-    for i in indices
-        v[i] = 1
-    end
-    if v in indicatorVectors[allowedIndices]
-        continue
-    end
-    if sum(v.*solution) >= -975
-        println("Found a solution ", v, " with drift ", sum(v.*solution))
-        break
-    end
-    println("Iteration number ", i)
-end
-println("If nothing was printed, no solution was found.")
