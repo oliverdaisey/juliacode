@@ -1,4 +1,5 @@
 using Oscar
+using Random
 include("../main.jl")
 
 
@@ -57,6 +58,10 @@ linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 -c3*w1 + w7 + k6//(k7 + k8)*w13,
                 -c4*w1 + w6 + k17//(k18 + k19)*w9,
                 -c5*w1 + w2 + k24//k25*w4]
+
+rows = [[[coeff(linearSystem[i], gens(S)[j]) for j in 1:length(gens(S))]..., constant_coefficient(linearSystem[i])] for i in 1:length(linearSystem)]
+linearMatrix = matrix(QQ, [rows[i] for i in 1:length(linearSystem)])
+tropicalPlueckerVector = LazyTropicalPlueckerVector(linearMatrix, nu)
 
 dimensionOfLinearSystem = dim(ideal(linearSystem))
 
@@ -141,13 +146,16 @@ for i in 1:size(M)[1]
     end
 end
 
+# these are the pluecker indices of the active support
+activeIndices = findall.(x -> x == 1, indicatorVectors[allowedIndices])
+
 # VERIFY THAT LINEAR DUAL SUPPORT IS CORRECT
 # choose 11 random indices from 12:30 without repeat
 solution = QQ.(solution)
 @assert length(unique([sum(v.*solution) for v in indicatorVectors])) == 1 "this is not a dual face"
 theMinimum = sum(indicatorVectors[1].*solution)
 println("The minimum is ", theMinimum)
-numOfIterations = 100000
+numOfIterations = 0
 for i in 1:numOfIterations
     indices = randperm(19)
     v = Int.(zeros(30))
@@ -210,5 +218,6 @@ end
 directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
 
 
-# CONSTRUCT DUAL SUPPORTS
+# CONSTRUCT DUAL CELLS
 hypersurfaceDualSupports = DualSupport{Hypersurface}.(linearisedBinomialSystem)
+linearDualCell = LazyLinearDualCell{Linear}(tropicalPlueckerVector, activeIndices)

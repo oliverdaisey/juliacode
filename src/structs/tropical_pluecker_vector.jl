@@ -13,15 +13,25 @@ struct TropicalPlueckerVector{minOrMax<:Union{typeof(min),typeof(max)}}
 end
 
 struct LazyTropicalPlueckerVector{minOrMax<:Union{typeof(min), typeof(max)}}
-    realisation::Matrix{Int}
-    nu::TropicalSemiringMap{minOrMax}
+    realisation::Union{Matrix{QQFieldElem}, QQMatrix}
+    nu::TropicalSemiringMap{Kt,t,minOrMax} where {Kt<:Generic.RationalFunctionField, t<:PolyRingElem}
     tropicalPlueckerVector::Dict{Vector{Int}, Oscar.TropicalSemiringElem{minOrMax}}
+
+    function LazyTropicalPlueckerVector(realisation::Union{Matrix{QQFieldElem}, QQMatrix}, nu::TropicalSemiringMap{Kt,t,minOrMax}) where {Kt<:Generic.RationalFunctionField, t<:PolyRingElem, minOrMax<:Union{typeof(min),typeof(max)}}
+        return new{minOrMax}(realisation, nu, Dict{Vector{Int}, Oscar.TropicalSemiringElem{minOrMax}}())
+    end
+end
+
+function rank(T::LazyTropicalPlueckerVector)
+    return size(T.realisation, 1)
 end
 
 function Base.getindex(T::LazyTropicalPlueckerVector, index::Vector{Int})
     if haskey(T.tropicalPlueckerVector, index)
         return T.tropicalPlueckerVector[index]
     else
+        # check the input was valid
+        @assert length(index)==rank(T) "The index must have the same length as the rank of the tropical pluecker vector (expected $(rank(T)), got $(length(index)))"
         # compute the entry
         entry = nu(det(T.realisation[:, index]))
         T.tropicalPlueckerVector[index] = entry
