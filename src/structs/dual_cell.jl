@@ -1,23 +1,41 @@
-"""
-    DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
+abstract type DualCell end
 
-A dual cell of the given type, using the given convention.
 """
-mutable struct DualCell{cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
+    DualCellHypersurface{minOrMax<:Union{typeof(min),typeof(max)}}
 
-    ambientDualSupport::DualSupport{cellType}
+A dual cell of type Hypersurface, using the given convention.
+"""
+mutable struct DualCellHypersurface{minOrMax<:Union{typeof(min),typeof(max)}}
+
+    ambientDualSupport::DualSupport
     activeIndices::Vector{Int}
     dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}
 
-    function DualCell{cellType,minOrMax}(ambientDualSupport::DualSupport{cellType}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {cellType<:DualType,minOrMax<:Union{typeof(min),typeof(max)}}
-        return new{cellType,minOrMax}(ambientDualSupport, activeIndices, dualWeight)
+    function DualCell{minOrMax}(ambientDualSupport::DualSupport, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
+        return new{minOrMax}(ambientDualSupport, activeIndices, dualWeight)
     end
 end
 
 """
+    DualCellLinear{minOrMax<:Union{typeof(min),typeof(max)}}
+
+A dual cell of type Linear, using the given convention.
+"""
+mutable struct DualCellLinear{minOrMax<:Union{typeof(min),typeof(max)}}
+
+    plueckerVector::LazyTropicalPlueckerVector
+    activeIndices::Vector{Vector{Int}}
+
+    function DualCell{minOrMax}(ambientDualSupport::DualSupport, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
+        return new{minOrMax}(ambientDualSupport, activeIndices, dualWeight)
+    end
+end
+
+
+"""
     dual_cell(ambientDualSupport::Matrix{Int}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}, cellType::Symbol, ::typeof(min)=min)
 
-Create a dual cell of the given type, using the min convention, with given ambient and active support.
+Create a dual cell of the given type, using the min convention, with given ambient and active support. This is the entry point for constructing all dual cells.
 
 # Arguments
 - `ambientDualSupport::Matrix{Int}`: The ambient support of the dual cell, with columns as points.
@@ -29,7 +47,7 @@ Create a dual cell of the given type, using the min convention, with given ambie
 # Returns
 A dual cell of the given type, using the min convention, with given ambient and active support.
 """
-function dual_cell(ambientDualSupport::Matrix{Int}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{typeof(min)}}, cellType::Symbol, ::typeof(min)=min)
+function dual_cell(cellType::Symbol, ambientDualSupport::Matrix{Int}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{typeof(min)}}, ::typeof(min)=min)
     check_dual_cell_inputs(ambientDualSupport, activeIndices, cellType)
     if cellType == :hypersurface
         return DualCell{Hypersurface,typeof(min)}(ambientDualSupport, activeIndices)
