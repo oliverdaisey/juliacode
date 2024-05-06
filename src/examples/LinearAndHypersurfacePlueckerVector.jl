@@ -15,8 +15,8 @@ pPath = dual_path(pNodes, pSupport)
 
 h = mixed_path_in_series([fPath, pPath])
 
-fStartDual = DualCell{Hypersurface, typeof(min)}(fSupport, [1,2], fNodes[1])
-pStartDual = DualCell{Linear, typeof(min)}(pSupport, [2, 3, 4, 5], pNodes[1])
+fStartDual = dual_cell(fSupport, [1,2], fNodes[1])
+pStartDual = dual_cell(pSupport, [2, 3, 4, 5], pNodes[1])
 
 s = mixed_cell([fStartDual, pStartDual])
 

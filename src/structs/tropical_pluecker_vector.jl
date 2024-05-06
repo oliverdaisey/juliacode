@@ -26,6 +26,16 @@ function rank(T::LazyTropicalPlueckerVector)
     return size(T.realisation, 1)
 end
 
+function dim(T::LazyTropicalPlueckerVector)
+    return size(T.realisation, 2)
+end
+
+
+
+function Base.show(io::IO, T::LazyTropicalPlueckerVector)
+    print(io, "Lazy Tropical Pluecker vector of rank $(rank(T))")
+end
+
 function Base.getindex(T::LazyTropicalPlueckerVector, index::Vector{Int})
     if haskey(T.tropicalPlueckerVector, index)
         return T.tropicalPlueckerVector[index]

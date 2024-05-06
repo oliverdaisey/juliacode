@@ -1,17 +1,18 @@
-abstract type DualCell end
+
+abstract type DualCell{cellType<:DualType, minOrMax<:Union{typeof(min), typeof(max)}} end
 
 """
     DualCellHypersurface{minOrMax<:Union{typeof(min),typeof(max)}}
 
 A dual cell of type Hypersurface, using the given convention.
 """
-mutable struct DualCellHypersurface{minOrMax<:Union{typeof(min),typeof(max)}}
+mutable struct DualCellHypersurface{minOrMax<:Union{typeof(min),typeof(max)}} <: DualCell{Hypersurface, minOrMax}
 
     ambientDualSupport::DualSupport
     activeIndices::Vector{Int}
     dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}
 
-    function DualCell{minOrMax}(ambientDualSupport::DualSupport, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
+    function DualCellHypersurface{minOrMax}(ambientDualSupport::DualSupport, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
         return new{minOrMax}(ambientDualSupport, activeIndices, dualWeight)
     end
 end
@@ -21,13 +22,28 @@ end
 
 A dual cell of type Linear, using the given convention.
 """
-mutable struct DualCellLinear{minOrMax<:Union{typeof(min),typeof(max)}}
+mutable struct DualCellLinear{minOrMax<:Union{typeof(min),typeof(max)}} <: DualCell{Linear, minOrMax}
 
     plueckerVector::LazyTropicalPlueckerVector
     activeIndices::Vector{Vector{Int}}
 
-    function DualCell{minOrMax}(ambientDualSupport::DualSupport, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
-        return new{minOrMax}(ambientDualSupport, activeIndices, dualWeight)
+    function DualCellLinear{minOrMax}(plueckerVector::LazyTropicalPlueckerVector, activeIndices::Vector{Vector{Int}}) where minOrMax<:Union{typeof(min),typeof(max)}
+        return new{minOrMax}(plueckerVector, activeIndices)
+    end
+end
+
+"""
+    DualCellInvertedLinear{minOrMax<:Union{typeof(min),typeof(max)}}
+
+A dual cell of type InvertedLinear, using the given convention.
+"""
+mutable struct DualCellInvertedLinear{minOrMax<:Union{typeof(min),typeof(max)}} <: DualCell{InvertedLinear, minOrMax}
+
+    plueckerVector::LazyTropicalPlueckerVector
+    activeIndices::Vector{Vector{Int}}
+
+    function DualCellInvertedLinear{minOrMax}(plueckerVector::LazyTropicalPlueckerVector, activeIndices::Vector{Vector{Int}}) where minOrMax<:Union{typeof(min),typeof(max)}
+        return new{minOrMax}(plueckerVector, activeIndices)
     end
 end
 
@@ -47,16 +63,16 @@ Create a dual cell of the given type, using the min convention, with given ambie
 # Returns
 A dual cell of the given type, using the min convention, with given ambient and active support.
 """
-function dual_cell(cellType::Symbol, ambientDualSupport::Matrix{Int}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{typeof(min)}}, ::typeof(min)=min)
+function dual_cell(cellType::Hypersurface, ambientDualSupport::Matrix{Int}, activeIndices::Vector{Int}, dualWeight::Vector{Oscar.TropicalSemiringElem{typeof(min)}}=nothing, ::typeof(min)=min)
     check_dual_cell_inputs(ambientDualSupport, activeIndices, cellType)
-    if cellType == :hypersurface
-        return DualCell{Hypersurface,typeof(min)}(ambientDualSupport, activeIndices)
-    elseif cellType == :linear
-        return DualCell{Linear,typeof(min)}(ambientDualSupport, activeIndices)
-    elseif cellType == :inverted_linear
-        return DualCell{InvertedLinear,typeof(min)}(ambientDualSupport, activeIndices)
+        return DualCellHypersurface{typeof(min)}(ambientDualSupport, activeIndices)
+end
+
+function dual_cell(cellType::Union{Linear, InvertedLinear}, p::LazyTropicalPlueckerVector, activeIndices::Vector{Vector{Int}}, dualWeight::Vector{Oscar.TropicalSemiringElem{typeof(min)}}=nothing, ::typeof(min)=min)
+    if cellType == Linear
+        return DualCellLinear{typeof(min)}(p, activeIndices)
     else
-        throw(ArgumentError("cellType must be one of :hypersurface, :linear, or :inverted_linear"))
+        return DualCellInvertedLinear{typeof(min)}(p, activeIndices)
     end
 end
 
@@ -68,12 +84,24 @@ function dual_cell(S::DualSupport{cellType}, s::Vector{Vector{Int}}, dualWeight:
         push!(activeIndices, activeIndex)
     end
 
-    return DualCell{cellType, typeof(min)}(S, activeIndices, dualWeight)
+    return dual_cell(cellType, S, activeIndices, dualWeight)
 end
 
 function dual_cell(S::DualSupport{cellType}, activeIndices::Vector{Int}, dualWeight::Vector{<:Oscar.TropicalSemiringElem{typeof(min)}}) where (cellType<:DualType)
 
-    return DualCell{cellType, typeof(min)}(S, activeIndices, dualWeight)
+    if cellType == Hypersurface
+        @assert length(activeIndices) == 2 "active support must be a pair of indices for a hypersurface"
+        return DualCellHypersurface(S, activeIndices, dualWeight)
+    else
+        # check that pluecker indices indexed by active support are loopless
+        # assert that no row of the submatrix indexed by active support is zero
+        @assert all([!iszero(v) for v in eachcol(S[activeIndices]')]) "active support must be loopless"
+        if cellType == Linear
+            return DualCellLinear(S, activeIndices, dualWeight)
+        else
+            return DualCellInvertedLinear(S, activeIndices, dualWeight)
+        end
+    end
 end
 
 """
@@ -146,19 +174,36 @@ function active_indices(m::DualCell)
     return m.activeIndices
 end
 
-function active_support(m::DualCell)
+function rank(m::DualCellLinear)
+    return rank(m.plueckerVector)
+end
+
+function dim(m::DualCellLinear)
+    return dim(m.plueckerVector)
+end
+
+function get_length_of_indicator_vector(m::DualCellLinear)
+    # binomial coefficient dim(m) choose rank(m)
+    return binomial(dim(m), rank(m))
+end
+
+function active_support(m::DualCellHypersurface)
     return ambient_support(m)[active_indices(m)]
+end
+
+function active_support(m::DualCellLinear)
+    # construct the correct indicator vectors
 end
 
 function dual_weight(m::DualCell)
     return m.dualWeight
 end
 
-function convention(m::DualCell{cellType, typeof(min)}) where cellType <: DualType
+function convention(m::DualCell{<:DualType, typeof(min)})
     return min
 end
 
-function convention(m::DualCell{cellType, typeof(max)}) where cellType <: DualType
+function convention(m::DualCell{<:DualType, typeof(max)})
     return max
 end
 
@@ -208,4 +253,12 @@ function dual_cells(S::DualSupport{<:DualType}, c::Vector{<:Oscar.TropicalSemiri
     end
 
     return dualCells
+end
+
+function indicator_vector(m::DualCellLinear, index::Vector{Int})
+    indicator = zeros(Int, get_length_of_indicator_vector(m))
+    for i in index
+        indicator[i] = 1
+    end
+    return indicator
 end

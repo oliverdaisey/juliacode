@@ -220,4 +220,3 @@ directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
 
 # CONSTRUCT DUAL CELLS
 hypersurfaceDualSupports = DualSupport{Hypersurface}.(linearisedBinomialSystem)
-linearDualCell = LazyLinearDualCell{Linear}(tropicalPlueckerVector, activeIndices)
