@@ -202,11 +202,14 @@ function active_support(m::DualCellLinear)
     vectors = [indicator_vector(m, index) for index in active_indices(m)]
     # convert to a Matrix
     return stack(vectors, dims=1)
-    
 end
 
 function dual_weight(m::DualCellHypersurface)
     return m.dualWeight
+end
+
+function dual_weight(m::DualCellLinear)
+    return [m.plueckerVector[index] for index in active_indices(m)]
 end
 
 function convention(m::DualCell{<:DualType, typeof(min)})
@@ -266,6 +269,14 @@ function dual_cells(S::DualSupport{<:DualType}, c::Vector{<:Oscar.TropicalSemiri
 end
 
 function indicator_vector(m::DualCellLinear, index::Vector{Int})
+    indicator = zeros(Int, get_length_of_indicator_vector(m))
+    for i in index
+        indicator[i] = -1
+    end
+    return indicator
+end
+
+function indicator_vector(m::DualCellInvertedLinear, index::Vector{Int})
     indicator = zeros(Int, get_length_of_indicator_vector(m))
     for i in index
         indicator[i] = 1

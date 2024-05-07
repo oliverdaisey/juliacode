@@ -1,6 +1,8 @@
 using Oscar
 import LinearAlgebra.rank
 
+abstract type TropicalPlueckerVectorSupertype end
+
 struct TropicalPlueckerVector{minOrMax<:Union{typeof(min),typeof(max)}}
     pluecker_indices::Vector{Vector{Int}}
     pluecker_entries::Vector{Oscar.TropicalSemiringElem{minOrMax}}
