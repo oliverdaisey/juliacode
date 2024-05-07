@@ -68,7 +68,7 @@ function dual_cell(cellType::Hypersurface, ambientDualSupport::Matrix{Int}, acti
         return DualCellHypersurface{typeof(min)}(ambientDualSupport, activeIndices)
 end
 
-function dual_cell(cellType::Union{Linear, InvertedLinear}, p::LazyTropicalPlueckerVector, activeIndices::Vector{Vector{Int}}, dualWeight::Vector{Oscar.TropicalSemiringElem{typeof(min)}}=nothing, ::typeof(min)=min)
+function dual_cell(cellType::LinearType, p::LazyTropicalPlueckerVector, activeIndices::Vector{Vector{Int}}, ::typeof(min)=min) where (LinearType<:Union{typeof(Linear), typeof(InvertedLinear)})
     if cellType == Linear
         return DualCellLinear{typeof(min)}(p, activeIndices)
     else
@@ -91,7 +91,7 @@ function dual_cell(S::DualSupport{cellType}, activeIndices::Vector{Int}, dualWei
 
     if cellType == Hypersurface
         @assert length(activeIndices) == 2 "active support must be a pair of indices for a hypersurface"
-        return DualCellHypersurface(S, activeIndices, dualWeight)
+        return DualCellHypersurface{typeof(min)}(S, activeIndices, dualWeight)
     else
         # check that pluecker indices indexed by active support are loopless
         # assert that no row of the submatrix indexed by active support is zero
@@ -154,15 +154,21 @@ end
 Computes the codimension of the tropical polyhedron dual to `m`.
 """
 function tropical_codim(m::DualCell)
-    return dim(convex_hull(active_support(m)))
+    return Oscar.dim(convex_hull(active_support(m)))
 end 
+
+import Oscar.type
+
+function type(m::DualCell)
+    return supertype(typeof(m)).parameters[1]
+end
 
 # handles printing of a dual cell
 function Base.show(io::IO, m::DualCell)
-    print(io, "Dual cell of type $(typeof(m).parameters[1]) supported on vertices $(m.activeIndices)")
+    print(io, "$(type(m)) dual cell supported on vertices $(m.activeIndices)")
 end
 
-function ambient_support(m::DualCell)
+function ambient_support(m::DualCellHypersurface)
     return m.ambientDualSupport
 end
 
@@ -184,7 +190,7 @@ end
 
 function get_length_of_indicator_vector(m::DualCellLinear)
     # binomial coefficient dim(m) choose rank(m)
-    return binomial(dim(m), rank(m))
+    return dim(m)
 end
 
 function active_support(m::DualCellHypersurface)
@@ -193,9 +199,13 @@ end
 
 function active_support(m::DualCellLinear)
     # construct the correct indicator vectors
+    vectors = [indicator_vector(m, index) for index in active_indices(m)]
+    # convert to a Matrix
+    return stack(vectors, dims=1)
+    
 end
 
-function dual_weight(m::DualCell)
+function dual_weight(m::DualCellHypersurface)
     return m.dualWeight
 end
 
@@ -219,7 +229,7 @@ end
 function dual_facets(m::DualCell)
     cellHull = convex_hull(active_support(m))
     properDualFaces = DualCell[]
-    for face in faces(cellHull, dim(cellHull) - 1)
+    for face in faces(cellHull, Oscar.dim(cellHull) - 1)
         faceVertices = [Int.(v) for v in vertices(face)]
         # println(faceVertices)
         # println("is dual cell candidate: ", is_dual_cell_candidate(ambient_support(m), faceVertices))

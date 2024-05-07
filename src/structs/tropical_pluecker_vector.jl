@@ -22,6 +22,15 @@ struct LazyTropicalPlueckerVector{minOrMax<:Union{typeof(min), typeof(max)}}
     end
 end
 
+"""
+    tropical_pluecker_vector(realisation::Union{Matrix{QQFieldElem}, QQMatrix}, nu::TropicalSemiringMap{Kt,t,minOrMax}) where {Kt<:Generic.RationalFunctionField, t<:PolyRingElem, minOrMax<:Union{typeof(min),typeof(max)}
+
+Create a tropical pluecker vector from the given realisation and tropical semiring map. This is a lazy implementation; it will only compute the entries of the pluecker vector when they are accessed.
+"""
+function tropical_pluecker_vector(realisation::Union{Matrix{QQFieldElem}, QQMatrix}, nu::TropicalSemiringMap{Kt,t,minOrMax}) where {Kt<:Generic.RationalFunctionField, t<:PolyRingElem, minOrMax<:Union{typeof(min),typeof(max)}}
+    return LazyTropicalPlueckerVector(realisation, nu)
+end
+
 function rank(T::LazyTropicalPlueckerVector)
     return size(T.realisation, 1)
 end

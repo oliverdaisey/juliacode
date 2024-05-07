@@ -7,6 +7,7 @@ function is_dual_cell_candidate(S::DualSupport{Hypersurface}, Ss::Vector{Vector{
     return length(Ss) >= 2
 end
 
+# TODO: Write this with the new linear dual cell types
 function is_dual_cell_candidate(S::DualSupport{<:Union{Linear, InvertedLinear}}, s::Vector{Int})
     return is_loopless(S, s)
 end
