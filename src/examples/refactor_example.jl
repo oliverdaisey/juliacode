@@ -24,4 +24,5 @@ s = mixed_cell([fStartDual, pStartDual])
 # construct mixed cell tracker
 t = mixed_cell_tracker(h, s)
 
-finalMixedCells = tropical_homotopy_continuation(t)
+# verify stable intersection point
+stable_intersection_point(s)
