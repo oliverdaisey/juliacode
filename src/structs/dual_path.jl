@@ -1,35 +1,38 @@
 """
     DualPath{pathType, minOrMax}
 
-A dual path is a sequence of nodes, each of which is a vector of tropical semiring elements. The nodes are connected by a linear interpolation. The ambient dual support is the support of the dual cell. Construct them with this data, or alternatively use the `dual_path` function.
+A dual path is a sequence of nodes, each of which is a vector of tropical semiring elements. The nodes are connected by a linear interpolation. Construct them with this data, or alternatively use the `dual_path` function.
 """
 struct DualPath{pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 
-    nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}
-    ambientDualSupport::DualSupport{pathType}
+    nodes::Vector{DualWeight{pathType, minOrMax}}
 
-    function DualPath{pathType, minOrMax}(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientDualSupport::DualSupport{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
-        return new{pathType, minOrMax}(nodes, ambientDualSupport)
+    function DualPath{pathType, minOrMax}(nodes::Vector{DualWeight{pathType, minOrMax}}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+        return new{pathType, minOrMax}(nodes)
     end
 
 end
 
-"""
-    dual_path(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientDualSupport::DualSupport{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
-
-Create a dual path from the given nodes and ambient dual support.
-"""
-function dual_path(nodes::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}, ambientDualSupport::DualSupport{pathType}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
-    return DualPath{pathType, minOrMax}(nodes, ambientDualSupport)
+function dual_path(nodes::Vector{DualWeight{pathType, minOrMax}}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+    return DualPath{pathType, minOrMax}(nodes)
 end
 
 """
     dual_path(d::DualCell{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
 
-Create a dual path from a dual cell.
+Create a singleton dual path from a single dual weight. Use this when you don't want to move one of your dual cells in the homotopy.
+"""
+function dual_path(w::DualWeight{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+    return DualPath{pathType, minOrMax}([w])
+end
+
+"""
+    dual_path(d::DualCell{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+
+Create a singleton dual path from a dual cell. Use this when you don't want to move one of your dual cells in the homotopy.
 """
 function dual_path(d::DualCell{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
-    return DualPath{pathType, minOrMax}([dual_vector(d)], ambient_dual_support(d))
+    return DualPath{pathType, minOrMax}([dual_weight(d)])
 end
 
 """
@@ -49,14 +52,18 @@ function lift_from_node_and_fraction(h::DualPath, index::Int, t::QQFieldElem)
     return [x.data for x in h.nodes[index]] + t * ([x.data for x in h.nodes[index+1]] - [x.data for x in h.nodes[index]])
 end
 
-function Base.show(io::IO, h::DualPath)
-    print(io, "Dual path with nodes $(h.nodes)")
-end
-
 function Base.getindex(h::DualPath, i::Int)
     return h.nodes[i]
 end
 
 function nodes(h::DualPath)
     return h.nodes
+end
+
+function type(h::DualPath{pathType, minOrMax}) where {pathType<:DualType, minOrMax<:Union{typeof(min),typeof(max)}}
+    return pathType
+end
+
+function Base.show(io::IO, h::DualPath)
+    print(io, "$(type(h)) dual path with $(length(nodes(h))) node(s)")
 end

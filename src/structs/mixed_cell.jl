@@ -56,7 +56,7 @@ function mixed_vector(s::MixedCell)
 end
 
 function tropical_lineality_dim(dualCells::Vector{<: DualCell})
-    hulls = convex_hull.(points.(ambient_support.(dualCells)))
+    hulls = convex_hull.(active_support.(dualCells))
     return codim(sum(hulls))
 end
 

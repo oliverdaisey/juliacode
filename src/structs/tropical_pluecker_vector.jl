@@ -60,8 +60,6 @@ function Base.getindex(T::LazyTropicalPlueckerVector, index::Vector{Int})
     end
 end
 
-import Oscar.tropical_pluecker_vector
-
 """
     tropical_pluecker_vector(pluecker_indices::Vector{Vector{Int}}, pluecker_entries::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:Union{typeof(min),typeof(max)}
 

@@ -11,12 +11,7 @@ struct MixedCellTracker
 end
 
 function mixed_cell_tracker(mixed_path::MixedPath, mixed_cell::MixedCell)
-    check_mixed_cell_tracker_inputs(mixed_path, mixed_cell)
     return MixedCellTracker(mixed_path, mixed_cell)
-end
-
-function check_mixed_cell_tracker_inputs(mixed_path::MixedPath, mixed_cell::MixedCell)
-    @assert ambient_support(mixed_path) == ambient_support(mixed_cell) "Ambient supports do not match"
 end
 
 function Base.show(io::IO, T::MixedCellTracker)

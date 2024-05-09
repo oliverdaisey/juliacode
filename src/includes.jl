@@ -2,7 +2,7 @@
 
 include("routines/random_lift.jl")
 include("structs/dual_type.jl")
-include("structs/support.jl")
+include("structs/dual_weight.jl")
 include("structs/tropical_pluecker_vector.jl")
 include("structs/dual_cell.jl")
 include("structs/dual_path.jl")

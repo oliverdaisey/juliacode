@@ -56,7 +56,7 @@ function ambient_support(h::MixedPath)
 end
 
 function Base.show(io::IO, h::MixedPath)
-    print(io, "Mixed path with dual paths $(h.dualPaths)")
+    print(io, "Mixed path with paths of types $(join([type(dualPath) for dualPath in h.dualPaths], ", "))")
 end
 
 function Base.getindex(h::MixedPath, i::Int)
