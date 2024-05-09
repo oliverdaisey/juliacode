@@ -1,5 +1,10 @@
 
-abstract type DualCell{cellType<:DualType, minOrMax<:Union{typeof(min), typeof(max)}} end
+mutable struct DualCell{cellType<:DualType, minOrMax<:Union{typeof(min), typeof(max)}} <: DualCell{cellType, minOrMax}
+
+    dualWeight::DualWeight
+    activeSupport::Vector{Vector{Int}}
+
+end
 
 """
     DualCellHypersurface{minOrMax<:Union{typeof(min),typeof(max)}}
@@ -23,7 +28,6 @@ end
 A dual cell of type Linear, using the given convention.
 """
 mutable struct DualCellLinear{minOrMax<:Union{typeof(min),typeof(max)}} <: DualCell{Linear, minOrMax}
-
     plueckerVector::LazyTropicalPlueckerVector
     activeIndices::Vector{Vector{Int}}
 
