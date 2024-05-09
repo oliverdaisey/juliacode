@@ -25,4 +25,7 @@ s = mixed_cell([fStartDual, pStartDual])
 t = mixed_cell_tracker(h, s)
 
 # verify stable intersection point
-stable_intersection_point(s)
+println("Stable intersection point = ", stable_intersection_point(s))
+
+# compute tropical drift
+println("Tropical drift = ", tropical_drift(t))

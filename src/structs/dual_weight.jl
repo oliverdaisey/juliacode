@@ -94,3 +94,7 @@ function compute_entry(w::DualWeight{LinearType, minOrMax}, index::Vector{Int}) 
     cache(w, index, weight)
     return weight
 end
+
+function Base.:/(w1::DualWeight, w2::DualWeight)
+    error("Division of dual weights is not currently supported.")
+end
