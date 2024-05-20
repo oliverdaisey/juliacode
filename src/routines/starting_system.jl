@@ -1,5 +1,3 @@
-include("../main.jl")
-
 function starting_system(F::Vector{<:MPolyRingElem}, nu::TropicalSemiringMap; random_shift::Union{Vector{<:TropicalSemiringElem}, Nothing}=nothing)
     
     if length(F) == 1
@@ -54,8 +52,14 @@ function starting_system_linear(F::Vector{<:MPolyRingElem}, nu::TropicalSemiring
 end
 
 PolynomialSystem = Vector{<:MPolyRingElem}
-StartingSystemData = Tuple{<:PolynomialSystem}
-function starting_solution(startingSystems::Vector{StartingSystemData}, nu::TropicalSemiringMap) # add type for F
+StartingSystemData = Tuple{<:PolynomialSystem, <:PolynomialSystem}
+
+"""
+    starting_solution(startingSystems::Vector{StartingSystemData}, nu::TropicalSemiringMap)
+
+Given a list of starting systems in the format (h^solve, h^linear), compute the solution to the system of equations. The solution is returned as a list of tropical semiring elements.
+"""
+function starting_solution(startingSystems::Vector{<:StartingSystemData}, nu::TropicalSemiringMap)
 
     system = vcat([it[2] for it in startingSystems]...)
     R = parent(first(system))
@@ -68,15 +72,17 @@ function starting_solution(startingSystems::Vector{StartingSystemData}, nu::Trop
         end
         A[i,ngens(R) + 1] = constant_coefficient(fi)
     end
-    solution = nu.(kernel(A, side=:right))
-
+    solution = nu.(constant_coefficient.(kernel(A, side=:right)))
     return [solution[i,1] / solution[end,1] for i in 1:(nrows(solution) - 1)]
 end
 
-function starting_data(partitionedSystem::Vector{PolynomialSystem}, nu::TropicalSemiringMap)
+function starting_data(partitionedSystem::Vector{<:PolynomialSystem}, nu::TropicalSemiringMap)
 
-    startingSystems = starting_system.(partitionedSystem. Ref(nu))
+    startingSystems = starting_system.(partitionedSystem, Ref(nu))
+    println(typeof(startingSystems))
     startingSolution = starting_solution(startingSystems, nu)
+
+    return startingSolution
 
     for system in startingSystems
         if all(isequal(1), total_degree.(system[1]))
@@ -87,5 +93,4 @@ function starting_data(partitionedSystem::Vector{PolynomialSystem}, nu::Tropical
         end
     end
 
-    length(flats) < dimensionOfLinearSystem
 end
