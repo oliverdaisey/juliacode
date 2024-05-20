@@ -48,6 +48,22 @@ function dual_cell(dualWeight::DualWeight{Hypersurface, typeof(min)}, ::typeof(m
 
 end
 
+
+
+# linear dual cell constructor given realisation matrix, tropical semiring map nu, and a vector of tropical semiring elems inside the tropical linear space
+function dual_cell(dualType::LinearType, realisation::MatElem{Kelem}, nu::TropicalSemiringMap{K,t,minOrMax}, interiorPoint::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {Kelem, K,t,minOrMax, LinearType<:Union{typeof(Linear), typeof(InvertedLinear)}}
+
+    @assert Kelem == elem_type(K) "The realisation must have entries of the correct type"
+    dualWeight = dual_weight(dualType, realisation, nu)
+
+    # work out active support based on the given point
+    flats = [findall(x -> x == val, interiorPoint) for val in unique(interiorPoint)]
+
+    return DualCell{dualType, typeof(min)}(dualWeight, activeSupport)
+end
+
+
+
 function check_dual_cell_inputs(cellType, activeSupport::Vector{Vector{Int}}) 
 
     # We just return for now, until I write this function properly.

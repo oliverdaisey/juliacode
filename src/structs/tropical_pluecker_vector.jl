@@ -37,6 +37,7 @@ function rank(T::LazyTropicalPlueckerVector)
     return size(T.realisation, 1)
 end
 
+import Oscar.dim
 function dim(T::LazyTropicalPlueckerVector)
     return size(T.realisation, 2)
 end

@@ -1,0 +1,4 @@
+
+struct PolynomialSystem
+    
+end
