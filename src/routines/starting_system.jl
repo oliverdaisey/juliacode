@@ -72,6 +72,7 @@ function starting_solution(startingSystems::Vector{<:StartingSystemData}, nu::Tr
         end
         A[i,ngens(R) + 1] = constant_coefficient(fi)
     end
+    display(A)
     solution = nu.(constant_coefficient.(kernel(A, side=:right)))
     return [solution[i,1] / solution[end,1] for i in 1:(nrows(solution) - 1)]
 end
@@ -79,18 +80,49 @@ end
 function starting_data(partitionedSystem::Vector{<:PolynomialSystem}, nu::TropicalSemiringMap)
 
     startingSystems = starting_system.(partitionedSystem, Ref(nu))
-    println(typeof(startingSystems))
     startingSolution = starting_solution(startingSystems, nu)
 
-    return startingSolution
-
+    flats = []
     for system in startingSystems
         if all(isequal(1), total_degree.(system[1]))
-            flats = [findall(x -> x == val, solution) for val in unique(startingSolution)]
+            flats = [findall(x -> x == val, startingSolution) for val in unique(startingSolution)]
             if length(flats) < dim(ideal(system[1]))
                 return starting_data(partitionedSystem, nu)
             end
         end
     end
+
+    activeSupport = collect(Iterators.product(flats...))
+    activeSupport = reshape(activeSupport, length(activeSupport))
+
+    # compute indicator vectors
+    indicatorVectors = Vector{Int}[]
+    for pt in activeSupport
+        indicatorVector = [1 for i in 1:length(startingSolution)]
+        for i in 1:length(startingSolution)
+            if i in pt
+                indicatorVector[i] = 0
+            end
+        end
+        push!(indicatorVectors, indicatorVector)
+    end
+
+    # which subset of indicatorVectors is a basis?
+    M = matrix(QQ, indicatorVectors)
+    redundantIndices = []
+    allowedIndices = [j for j in 1:size(M)[1]]
+    for i in 1:size(M)[1]
+        indices = [j for j in allowedIndices if j != i]
+        submatrix = M[indices, :]
+        if rank(submatrix) == rank(M)
+            push!(redundantIndices, i)
+            filter!(j -> j != i, allowedIndices)
+        end
+    end
+
+    # these are the pluecker indices of the active support
+    activeIndices = findall.(x -> x == 1, indicatorVectors[allowedIndices])
+
+    return startingSolution, activeIndices
 
 end

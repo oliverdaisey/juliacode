@@ -17,4 +17,4 @@ F4 = [f4]
 F0 = [x1 + x2 + x5 + x6, x3 + x4 + x5 + x6]
 
 partitionedSystem = [F1, F2, F3, F4, F0]
-starting_data(partitionedSystem, nu)
+tarting_data(partitionedSystem, nu)
