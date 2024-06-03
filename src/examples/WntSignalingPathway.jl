@@ -119,6 +119,7 @@ while length(flats) < dimensionOfLinearSystem
     global flats = [findall(x -> x == val, solution) for val in unique(solution)]
 
 end
+
 activeSupport = collect(Iterators.product(flats...))
 activeSupport = reshape(activeSupport, length(activeSupport))
 # compute indicator vectors

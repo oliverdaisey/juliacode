@@ -1,6 +1,7 @@
 # This file includes all the files in the src directory in order of dependency.
 
 include("routines/random_lift.jl")
+include("routines/starting_system.jl")
 include("structs/dual_type.jl")
 include("structs/dual_weight.jl")
 include("structs/tropical_pluecker_vector.jl")

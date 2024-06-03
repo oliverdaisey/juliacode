@@ -16,4 +16,27 @@ F3 = [f3]
 F4 = [f4]
 F0 = [x1 + x2 + x5 + x6, x3 + x4 + x5 + x6]
 
-starting_solution([F1, F2, F3, F4, F0], nu)
+partitionedSystem = [F1, F2, F3, F4, F0]
+# activeIndices is not being computed correctly
+startingSolution, activeIndices = starting_data(partitionedSystem, nu)
+
+indicatorVectors = [
+    [1, 1, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0],
+    [1, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 0, 1],
+    [0, 1, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0, 0],
+    [0, 1, 0, 0, 1, 0],
+    [0, 1, 0, 0, 0, 1],
+    [0, 0, 1, 1, 0, 0],
+    [0, 0, 1, 0, 1, 0],
+    [0, 0, 1, 0, 0, 1],
+    [0, 0, 0, 1, 1, 0],
+    [0, 0, 0, 1, 0, 1],
+    [0, 0, 0, 0, 1, 1]
+]
+
+dotProducts = [sum(indicatorVector .* QQ.(startingSolution)) for indicatorVector in indicatorVectors]
+# the minimum should be achieved multiple times
