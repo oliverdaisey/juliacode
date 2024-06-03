@@ -86,6 +86,4 @@ function starting_data(partitionedSystem::Vector{PolynomialSystem}, nu::Tropical
             end
         end
     end
-
-    length(flats) < dimensionOfLinearSystem
 end
