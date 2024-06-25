@@ -24,7 +24,7 @@ A dual cell of the given type, using the min convention, with given ambient and 
 """
 function dual_cell(activeSupport::Vector{Vector{Int}}, dualWeight::DualWeight{Hypersurface, typeof(min)}, ::typeof(min)=min)
     check_dual_cell_inputs(Hypersurface, activeSupport)
-        return DualCell{Hypersurface, typeof(min)}(dualWeight, activeSupport)
+    return DualCell{Hypersurface, typeof(min)}(dualWeight, activeSupport)
 end
 
 function dual_cell(activeSupport::Vector{Vector{Int}}, dualWeight::DualWeight{LinearType, typeof(min)}, ::typeof(min)=min) where (LinearType<:Union{Linear, InvertedLinear})
@@ -46,6 +46,15 @@ function dual_cell(dualWeight::DualWeight{Hypersurface, typeof(min)}, ::typeof(m
     polynomial = data(dualWeight)
     return dual_cell(generate_support(polynomial), dualWeight)
 
+end
+
+"""
+    dual_cell(polynomial::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}}, ::typeof(min)=min)
+
+Create a hypersurface dual cell from a tropical polynomial. All points are active.
+"""
+function dual_cell(polynomial::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{typeof(min)}}, ::typeof(min)=min)
+    return dual_cell(generate_support(polynomial), dual_weight(polynomial))
 end
 
 

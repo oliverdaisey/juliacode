@@ -11,6 +11,15 @@ function tropical_homotopy_continuation(T::MixedCellTracker)
     return mixedCellsAtTarget
 end
 
+"""
+    find_mixed_cells(T::MixedCellTracker, mixedCellsAtTarget::Vector{MixedCell})
+
+Recursively find all mixed cells at the target dual weight in the mixed cell tracker `T` and store them in the vector `mixedCellsAtTarget`. Exits when the tracker has no more breaking points to visit.
+
+Parameters:
+    - `T::MixedCellTracker`: the mixed cell tracker to search
+    - `mixedCellsAtTarget::Vector{MixedCell}`: the vector to store the mixed cells at the target dual weight
+"""
 function find_mixed_cells(T::MixedCellTracker, mixedCellsAtTarget::Vector{MixedCell} = MixedCell[])
 
     # if we have a cell to visit, proceed

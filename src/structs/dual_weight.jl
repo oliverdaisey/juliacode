@@ -1,7 +1,13 @@
 MinOrMax = Union{typeof(min),typeof(max)}
 
 """
-The dual type is important for computing perturbations.
+    DualWeight{dualType<:DualType, minOrMax<:Union{typeof(min), typeof(max)}}
+
+A dual weight is a choice of coefficients/weights for a dual cell. From dual weights one can construct dual paths, mixed paths, and compute stable intersections. Additionally parametrises a dual type, which provides constraints for computing perturbations and deflations. 
+
+# Fields
+- `entries::Dict{Vector{Int}, Oscar.TropicalSemiringElem{minOrMax}}`: A dictionary of indices to weights. Allows for caching of computed weights.
+- `data`: The data from which entries of the dual weight may be computed. This is either a polynomial (`Hypersurface`), a matrix and valuation (`Linear`/`InvertedLinear`), or nothing.
 """
 mutable struct DualWeight{dualType<:DualType, minOrMax<:Union{typeof(min), typeof(max)}}
 
@@ -32,12 +38,17 @@ end
 """
     dual_weight(polynomial::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:Union{typeof(min), typeof(max)}
 
-    Create a Hypersurface dual weight from a polynomial.
+Create a Hypersurface dual weight from a polynomial.
 """
 function dual_weight(polynomial::AbstractAlgebra.Generic.MPoly{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:Union{typeof(min), typeof(max)}}
     return DualWeight{Hypersurface, minOrMax}(polynomial)
 end
 
+"""
+    dual_weight(dualType::LinearType, realisation::MatElem{K}, nu::TropicalSemiringMap{L,t,minOrMax}) where {K,L,t,minOrMax,LinearType<:Union{typeof(Linear), typeof(InvertedLinear)}}
+
+Create a LinearType dual weight from a realisation matrix and a tropical semiring map. Entries of the dual weight are computed on the fly and cached.
+"""
 function dual_weight(dualType::LinearType, realisation::MatElem{K}, nu::TropicalSemiringMap{L,t,minOrMax}) where {K,L,t,minOrMax,LinearType<:Union{typeof(Linear), typeof(InvertedLinear)}}
     return DualWeight{dualType, minOrMax}((realisation, nu))
 end
@@ -95,6 +106,11 @@ function compute_entry(w::DualWeight{LinearType, minOrMax}, index::Vector{Int}) 
     return weight
 end
 
+"""
+    Base.:/(w1::DualWeight, w2::DualWeight)
+
+Division of dual weights is not supported, and likely does not make sense.
+"""
 function Base.:/(w1::DualWeight, w2::DualWeight)
     error("Division of dual weights is not currently supported.")
 end

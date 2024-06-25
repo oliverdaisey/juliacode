@@ -1,4 +1,8 @@
+"""
+    tropical_drift(T::MixedCellTracker)
 
+Computes the direction that the mixed cell corresponding to this tracker moves in when moving a small distance along the corresponding mixed path.
+"""
 function tropical_drift(T::MixedCellTracker)
 
     # to do: infer a correct epsilon analytically
