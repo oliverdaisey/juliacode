@@ -139,8 +139,8 @@ M = matrix(QQ, indicatorVectors)
 redundantIndices = []
 allowedIndices = [j for j in 1:size(M)[1]]
 for i in 1:size(M)[1]
-    indices = [j for j in allowedIndices if j != i]
-    submatrix = M[indices, :]
+    validIndices = [j for j in allowedIndices if j != i]
+    submatrix = M[validIndices, :]
     if rank(submatrix) == rank(M)
         push!(redundantIndices, i)
         filter!(j -> j != i, allowedIndices)
@@ -220,5 +220,5 @@ directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
 
 
 # CONSTRUCT DUAL CELLS
-hypersurfaceDualSupports = DualSupport{Hypersurface}.(linearisedBinomialSystem)
+hypersurfaceDualSupports = dual_weight.(linearisedBinomialSystem)
 linearDualCell = dual_cell(Linear, tropicalPlueckerVector, activeIndices)
