@@ -67,32 +67,3 @@ function total_degree_starting_data(p::PluckerVector, F::TropicalTuple)
     return (p_start, F_start, S)
 
 end
-
-# f::MPoly{T} where T <: RingElement
-function get_degree(f)::Int
-
-    exponent_matrix = f.exps # the vectors are the columns of this matrix, I want to iterate over them
-    degree = 0
-    for i in 1:ncols(exponent_matrix)
-        monomial_degree = sum(exponent_matrix[:,i])
-        if monomial_degree > degree
-            degree = monomial_degree
-        end
-    end
-
-    return Int(degree)
-end
-
-n = 3
-k = 1
-R, (x0, x1, x2, x3) = T["x0", "x1", "x2", "x3"]
-
-# compute plueker indices
-pluecker_vector = [0 for i in 1:length(pluecker_indices)]
-pluecker_indices = subsets(collect(1:(n+1)), k+1)
-# pluecker_vector = elem_type(T)[T(0), T(0), zero(T), T(0), T(0), T(0)]
-p_target = PluckerVector(pluecker_indices, pluecker_vector)
-
-F_target = (x0*x1 + x0*x3 + T(-1)*x1*x3,)
-
-p_start, F_start, S = total_degree_starting_data(p_target, F_target)

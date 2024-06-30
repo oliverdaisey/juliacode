@@ -8,7 +8,8 @@ function tropical_drift(T::MixedCellTracker)
     # to do: infer a correct epsilon analytically
     epsilon = QQFieldElem(1//100)
     initialPoint = stable_intersection_point(T.mixed_cell)
-    dualDirection = mixed_path(T)[2] ./ mixed_path(T)[1]
+    dualDirection = direction(mixed_path(T), 1)
+    println("Dual direction = ", dualDirection)
 
     lengths = [length(dual_weight(x)) for x in dual_cells(mixed_cell(T))]
 
@@ -19,7 +20,7 @@ function tropical_drift(T::MixedCellTracker)
     # build a new mixed cell using a lift a small distance along this dual direction (small enough to remain in mixed cell cone)
     newMixedCell = deepcopy(mixed_cell(T))
     for i in 1:length(dual_cells(newMixedCell))
-        newMixedCell.dual_cells[i].dualWeight = newMixedCell.dual_cells[i].dualWeight .* TT.(epsilon * [x.data for x in dualDirectionVectors[i]])
+        newMixedCell.dual_cells[i].dualWeight = newMixedCell.dual_cells[i].dualWeight + TT.(epsilon * [x.data for x in dualDirectionVectors[i]])
     end
 
     finalPoint = stable_intersection_point(newMixedCell)

@@ -88,10 +88,17 @@ function compute_entry(w::DualWeight{Hypersurface, minOrMax}, index::Vector{Int}
     return weight
 end
 
+"""
+    compute_entry(w::DualWeight{LinearType, minOrMax}, index::Vector{Int}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+We index linear dual weights by their indicator vectors (i.e. vertices of the corresponding matroid polytope).
+"""
 function compute_entry(w::DualWeight{LinearType, minOrMax}, index::Vector{Int}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
 
-    # assert that data exists
-    @assert !isempty(data(w)) "Data must be set for this dual weight."
+    if isnothing(data(w))
+        println("w has entries $(w.entries)")
+        return w.entries[index]
+    end
 
     realisation, nu = data(w)
 
@@ -99,11 +106,23 @@ function compute_entry(w::DualWeight{LinearType, minOrMax}, index::Vector{Int}) 
     @assert length(index) == ncols(realisation) "Index must have the same length as the number of columns in the realisation (expected $(ncols(realisation)), got $(length(index)))"
     @assert dual_type(w) == Linear || issubset(index, [0,1]) "Index must be a 0/1 vector for an InvertedLinear dual weight"
     @assert dual_type(w) == InvertedLinear || issubset(index, [0,-1]) "Index must be a 0/-1 vector for a Linear dual weight"
-    
+    # make sure the correct number of entries is nonzero
 
     weight = nu(det(realisation[:,findall(!iszero, index)]))
     cache(w, index, weight)
     return weight
+end
+
+function Base.length(w::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+    return length(w.entries)
+end
+
+function Base.iterate(w::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+    return iterate(w.entries)
+end
+
+function Base.iterate(w::DualWeight{Hypersurface, minOrMax}, state) where minOrMax<:MinOrMax
+    return iterate(w.entries, state)
 end
 
 """
@@ -113,4 +132,110 @@ Division of dual weights is not supported, and likely does not make sense.
 """
 function Base.:/(w1::DualWeight, w2::DualWeight)
     error("Division of dual weights is not currently supported.")
+end
+
+"""
+    direction(w1::DualWeight{Hypersurface, minOrMax}, w2::DualWeight{Hypersurface, minOrMax})
+
+Compute the direction between two Hypersurface dual weights.
+"""
+function direction(w1::DualWeight{Hypersurface, minOrMax}, w2::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+
+    i1 = collect(indices(w1))
+    i2 = collect(indices(w2))
+    @assert i1 == i2 "The ambient dual support changed between the two dual weights"
+
+    # compute the direction by evaluating both dual weights entirely, then taking the difference
+    entries = []
+    for index in i1
+        push!(entries, getindex(w1, index) / getindex(w2, index))
+    end
+
+    return entries
+
+end
+
+"""
+    direction(w1::DualWeight{LinearType, minOrMax}, w2::DualWeight{LinearType, minOrMax})
+
+Compute the direction between two LinearType dual weights.
+"""
+function direction(w1::DualWeight{LinearType, minOrMax}, w2::DualWeight{LinearType, minOrMax}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+    error("Computation of direction for linear dual weights is not yet implemented")
+    println("Warning: slow computation of direction for linear dual weights")
+    # compute the direction by evaluating both dual weights entirely, then taking the difference
+    entries = []
+
+    
+end
+
+function indices(w::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+    
+    # get all exponent vectors from data
+    return exponents(data(w))
+end
+
+function indices(w::DualWeight{LinearType, minOrMax}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+    # if we do not have any data, it means that all the entries are cached
+    if isnothing(data(w))
+        return sort(collect(keys(w.entries)))
+    end
+
+    # otherwise we must have a realisation
+    n = nrows(data(w))
+    m = ncols(data(w))
+    
+    return Oscar.combinations(n, m)
+end
+
+function Base.length(w::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+    return length(indices(w))
+end
+
+function Base.length(w::DualWeight{LinearType, minOrMax}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+    # if we do not have any data, it means that all the entries are cached
+    println("data is $(data(w))")
+    if isnothing(data(w))
+        return length(keys(w.entries))
+    end
+
+    # otherwise we must have a realisation
+    n = nrows(data(w))
+    m = ncols(data(w))
+    
+    return Oscar.combinations(n, m)
+end
+
+import Base.+
+function (+)(w1::DualWeight{Hypersurface, minOrMax}, v::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:MinOrMax
+
+    @assert length(v) == length(indices(w1)) "Dual weight and vector of tropical numbers is not the same length"
+
+    # create a new dual weight
+    w = DualWeight{Hypersurface, minOrMax}(data(w1))
+    for (index, weight) in zip(indices(w1), v)
+        w.entries[index] = w[index] * weight # tropical multiplciation is addition
+    end
+
+    return w
+    
+end
+
+function +(w1::DualWeight{LinearType, minOrMax}, v::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+    @assert length(v) == length(w1) "Dual weight and vector of tropical numbers is not the same length"
+
+    # create a new dual weight
+    w = deepcopy(w1)
+    for (index, weight) in zip(indices(w1), v)
+        if isone(weight)
+            w.entries[index] = w[index] * weight # tropical multiplciation is addition
+        end
+    end
+
+    return w
+    
 end

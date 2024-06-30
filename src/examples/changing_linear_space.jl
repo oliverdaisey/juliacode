@@ -4,9 +4,9 @@ Kt, t = rational_function_field(QQ, "t")
 R, z = Kt["z"]
 nu = tropical_semiring_map(Kt, t)
 
-Mtarget = matrix(R, [1 1 0 0 1 1; 0 0 1 1 1 1])
-Mcurrent = matrix(R, [1 0 1 1 0 1; 0 1 0 1 1 1])
-Mcurrent = matrix(R, rand(Int8, 2, 6))
+Mtarget = matrix(Kt, [1 1 0 0 1 1; 0 0 1 1 1 1])
+Mcurrent = matrix(Kt, [1 0 1 1 0 1; 0 1 0 1 1 1])
+Mcurrent = matrix(Kt, rand(Int8, 2, 6))
 Mtarget[:,3]=t.*Mtarget[:,3]
 Mtarget[:,1]=t.*Mtarget[:,1]
 

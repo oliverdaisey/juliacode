@@ -64,6 +64,22 @@ function type(h::DualPath{pathType, minOrMax}) where {pathType<:DualType, minOrM
     return pathType
 end
 
+"""
+    direction(h::DualPath, index::Int)
+
+Get the direction of the dual path after the given index of a node.
+"""
+function direction(h::DualPath, index::Int)
+    
+        @assert 1 <= index <= length(h.nodes) "Index out of bounds"
+    
+        if index >= length(h.nodes)
+            return [0 for x in nodes(h)[1]]
+        end
+    
+        return direction(h[index], h[index+1])
+end
+
 function Base.show(io::IO, h::DualPath)
     print(io, "$(type(h)) dual path with $(length(nodes(h))) node(s)")
 end

@@ -60,7 +60,7 @@ function Base.show(io::IO, h::MixedPath)
 end
 
 function Base.getindex(h::MixedPath, i::Int)
-    return vcat([h.dualPaths[j][h.pointers[i][j]] for j in 1:length(h.dualPaths)]...)
+    return [h.dualPaths[j][h.pointers[i][j]] for j in 1:length(h.dualPaths)]
 end
 
 function pointers(h::MixedPath)
@@ -69,4 +69,35 @@ end
 
 function dual_paths(h::MixedPath)
     return h.dualPaths
+end
+
+function number_of_paths(h::MixedPath)
+    return length(dual_paths(h))
+end
+
+function direction(h::MixedPath, index::Int)
+    @assert 1 <= index <= length(h.pointers) "Index out of bounds"
+    
+    if index >= length(h.pointers)
+        return TT.([0 for x in h[1]])
+    end
+
+    components = []
+    for i in 1:number_of_paths(h)
+        # only compute the difference if the weight changes
+        if h.pointers[index][i] == h.pointers[index+1][i]
+            println("No change in weight")
+            push!(components, TT.([0 for j in 1:length(h[1][i])]))
+        # otherwise, we need to compute the difference
+        else
+            push!(components, TT.(direction(h[index][i], h[index+1][i])))
+        end
+    end
+
+    @assert length(components) == number_of_paths(h) "Number of components does not match number of paths"
+    
+    println("Components is ", components)
+    components = vcat(components...)
+
+    return components
 end
