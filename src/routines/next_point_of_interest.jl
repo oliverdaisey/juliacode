@@ -15,7 +15,7 @@ function next_point_of_interest(T::MixedCellTracker)
     pointer_index = 1
     fraction = QQFieldElem(0)
 
-    lengths = length.(ambient_support.(dual_cells(mixed_cell(T))))
+    lengths = length.(dual_weight.(dual_cells(mixed_cell(T))))
 
     # deal with case that the mixed path only has one node left
     if pointer_index == length(pointers(h))
