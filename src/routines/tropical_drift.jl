@@ -9,7 +9,6 @@ function tropical_drift(T::MixedCellTracker)
     epsilon = QQFieldElem(1//100)
     initialPoint = stable_intersection_point(T.mixed_cell)
     dualDirection = direction(mixed_path(T), 1)
-    println("Dual direction = ", dualDirection)
 
     lengths = [length(dual_weight(x)) for x in dual_cells(mixed_cell(T))]
 

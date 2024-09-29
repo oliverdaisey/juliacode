@@ -75,6 +75,19 @@ function dual_weight(dualType::LinearType, activeSupport::Vector{Vector{Int}}, w
     return w
 end
 
+function dual_weight(support::Vector, v::Vector{Oscar.TropicalSemiringElem{minOrMax}}, cellType) where minOrMax<:MinOrMax
+
+    @assert length(support) == length(v) "The number of indices and entries must match"
+
+    dualWeight = DualWeight{cellType, minOrMax}(nothing)
+        
+    for i in 1:length(v)
+        cache(dualWeight, support[i], v[i])
+    end
+
+    return dualWeight
+end
+
 function Base.getindex(w::DualWeight, index::Vector{Int})
     if haskey(w.entries, index)
         return w.entries[index]
@@ -96,7 +109,6 @@ We index linear dual weights by their indicator vectors (i.e. vertices of the co
 function compute_entry(w::DualWeight{LinearType, minOrMax}, index::Vector{Int}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
 
     if isnothing(data(w))
-        println("w has entries $(w.entries)")
         return w.entries[index]
     end
 
@@ -197,7 +209,6 @@ end
 function Base.length(w::DualWeight{LinearType, minOrMax}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
 
     # if we do not have any data, it means that all the entries are cached
-    println("data is $(data(w))")
     if isnothing(data(w))
         return length(keys(w.entries))
     end
@@ -238,4 +249,45 @@ function +(w1::DualWeight{LinearType, minOrMax}, v::Vector{Oscar.TropicalSemirin
 
     return w
     
+end
+
+"""
+    to_vector(w::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+
+Convert a Hypersurface dual weight to a vector of tropical numbers.
+
+This is safe for hypersurfaces.
+"""
+function to_vector(w::DualWeight{Hypersurface, minOrMax}) where minOrMax<:MinOrMax
+
+    return [w[index] for index in indices(w)]
+
+end
+
+"""
+    to_vector(w::DualWeight{LinearType, minOrMax}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+Convert a LinearType dual weight to a vector of tropical numbers.
+
+This is very undesirable in general, as the number of entries can be exponential in the size of the realisation matrix.
+"""
+function to_vector(w::DualWeight{LinearType, minOrMax}) where {minOrMax<:MinOrMax, LinearType<:Union{Linear, InvertedLinear}}
+
+    return [w[index] for index in indices(w)]
+
+end
+
+"""
+    update!(w::DualWeight, v::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:MinOrMax
+
+Update a dual weight with a vector of tropical numbers.
+"""
+function update!(w::DualWeight, v::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:MinOrMax
+
+    @assert length(v) == length(indices(w)) "Dual weight and vector of tropical numbers is not the same length"
+
+    for (index, weight) in zip(indices(w), v)
+        cache(w, index, weight)
+    end
+
 end

@@ -86,7 +86,6 @@ function direction(h::MixedPath, index::Int)
     for i in 1:number_of_paths(h)
         # only compute the difference if the weight changes
         if h.pointers[index][i] == h.pointers[index+1][i]
-            println("No change in weight")
             push!(components, TT.([0 for j in 1:length(h[1][i])]))
         # otherwise, we need to compute the difference
         else
@@ -96,7 +95,6 @@ function direction(h::MixedPath, index::Int)
 
     @assert length(components) == number_of_paths(h) "Number of components does not match number of paths"
     
-    println("Components is ", components)
     components = vcat(components...)
 
     return components

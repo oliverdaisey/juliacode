@@ -72,7 +72,6 @@ function dual_cell(dualType::LinearType, realisation::MatElem{Kelem}, nu::Tropic
 end
 
 
-
 function check_dual_cell_inputs(cellType, activeSupport::Vector{Vector{Int}}) 
 
     # We just return for now, until I write this function properly.
@@ -111,6 +110,22 @@ function ambient_dim(m::DualCell)
     return length(first(active_support(m)))
 end
 
+"""
+Warning: Calling this function is going to be slow for large tropical linear spaces.
+"""
+function ambient_support(m::DualCell{LinearType, typeof(min)}) where LinearType<:Union{Linear, InvertedLinear}
+    # collect all indices and return all points
+    return indices(dual_weight(m))
+end
+
+function ambient_support(m::DualCell{Hypersurface, typeof(min)})
+    if !isnothing(data(dual_weight(m)))
+        return generate_support(data(dual_weight(m)))
+    else
+        return keys(dual_weight(m).entries)
+    end
+end
+
 function rank(m::DualCell{LinearType, typeof(min)}) where LinearType<:Union{typeof(Linear), typeof(InvertedLinear)}
     # return number of non zero elements of first(active_support(m))
     return sum([!iszero(v) for v in first(active_support(m))])
@@ -118,6 +133,11 @@ end
 
 function active_support(m::DualCell)
     return m.activeSupport
+end
+
+function active_indices(m::DualCell)
+    # return the indices of activeSupport inside of ambientSupport    
+    return [findfirst(it -> it == v, ambient_support(m)) for v in active_support(m)]
 end
 
 function dual_weight(m::DualCell)
@@ -133,7 +153,7 @@ function convention(m::DualCell{<:DualType, typeof(max)})
 end
 
 function center(m::DualCell)
-    return QQ.([sum(active_support(m), dims=1)...]) / length(active_support(m))
+    return QQ.(sum(active_support(m), dims=1)...) / length(active_support(m))
 end
 
 import Oscar.convex_hull
@@ -146,10 +166,8 @@ function dual_facets(m::DualCell)
     properDualFaces = DualCell[]
     for face in faces(cellHull, Oscar.dim(cellHull) - 1)
         faceVertices = [Int.(v) for v in vertices(face)]
-        # println(faceVertices)
-        # println("is dual cell candidate: ", is_dual_cell_candidate(ambient_support(m), faceVertices))
         if is_dual_cell_candidate(ambient_support(m), faceVertices)
-            push!(properDualFaces, dual_cell(ambient_support(m), faceVertices, dual_weight(m)))
+            push!(properDualFaces, dual_cell(faceVertices, dual_weight(m)))
         end
     end
         
@@ -157,14 +175,14 @@ function dual_facets(m::DualCell)
 end
 
 """
-    dual_cells(S::DualSupport{<:DualType}, c::Vector{Oscar.TropicalSemiringElem})
+    dual_cells(S::DualCell, c::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:Union{typeof(min), typeof(max)}
 
-Create a vector of all the dual cells from a support (of exponent vectors) and a lift.
+Create a vector of all the dual cells from a dual cell defining a support and a lift.
 
 """
-function dual_cells(S, c::Vector{<:Oscar.TropicalSemiringElem})
+function dual_cells(S::DualCell, c::Vector{Oscar.TropicalSemiringElem{minOrMax}}) where minOrMax<:Union{typeof(min), typeof(max)}
 
-    dualSubdivision = subdivision_of_points_workaround(points(S), c)
+    dualSubdivision = subdivision_of_points_workaround(vcat(transpose.(ambient_support(S))...), c)
     polyhedralComplex = polyhedral_complex(Oscar.pm_object(dualSubdivision).POLYHEDRAL_COMPLEX)
 
     dualCells = []
@@ -172,7 +190,7 @@ function dual_cells(S, c::Vector{<:Oscar.TropicalSemiringElem})
         for p in polyhedra_of_dim(polyhedralComplex, i)
             s = [Int.(v) for v in vertices(p)]
             if is_dual_cell_candidate(S, s)
-                push!(dualCells, dual_cell(S, s, c))
+                push!(dualCells, dual_cell(s, dual_weight(ambient_support(S), c, type(S))))
             end
         end
     end
