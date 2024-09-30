@@ -71,6 +71,15 @@ function dual_cell(dualType::LinearType, realisation::MatElem{Kelem}, nu::Tropic
     return DualCell{dualType, typeof(min)}(dualWeight, activeSupport)
 end
 
+# linear dual cell constructor given realisation matrix, tropical semiring map nu, and active support
+function dual_cell(dualType::LinearType, realisation::MatElem{Kelem}, nu::TropicalSemiringMap{K,t,minOrMax}, activeSupport) where {Kelem, K,t,minOrMax, LinearType<:Union{typeof(Linear), typeof(InvertedLinear)}}
+
+    @assert Kelem == elem_type(K) "The realisation must have entries of the correct type"
+    dualWeight = dual_weight(dualType, realisation, nu)
+
+
+    return DualCell{dualType, typeof(min)}(dualWeight, activeSupport)
+end
 
 function check_dual_cell_inputs(cellType, activeSupport::Vector{Vector{Int}}) 
 

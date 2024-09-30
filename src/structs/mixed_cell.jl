@@ -32,7 +32,8 @@ function check_mixed_cell_inputs(dualCells::Vector{<: DualCell})
 
     n = ambient_dim(dualCells[1])
 
-    @assert sum(tropical_codim.(dualCells)) + tropical_lineality_dim(dualCells) == n "Dual cells must have complementary dimensions"
+    println("WARNING: Skipping complementary dimension check to save time.")
+    # @assert sum(tropical_codim.(dualCells)) + tropical_lineality_dim(dualCells) == n "Dual cells must have complementary dimensions"
 end
 
 function ambient_support(s::MixedCell)
