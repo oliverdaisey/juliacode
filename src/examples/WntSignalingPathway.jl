@@ -59,9 +59,8 @@ linearSystem = [k27*w16 - (k1*k26)//k2*w18,
                 -c4*w1 + w6 + k17//(k18 + k19)*w9,
                 -c5*w1 + w2 + k24//k25*w4]
 
-rows = [[[coeff(linearSystem[i], gens(S)[j]) for j in 1:length(gens(S))]..., constant_coefficient(linearSystem[i])] for i in 1:length(linearSystem)]
-linearMatrix = matrix(QQ, [rows[i] for i in 1:length(linearSystem)])
-tropicalPlueckerVector = tropical_pluecker_vector(linearMatrix, nu)
+rows = [[[coeff(linearSystem[i], gens(S)[j]) for j in 1:length(gens(S))]...] for i in 1:length(linearSystem)]
+linearMatrix = matrix(Kt, [rows[i] for i in 1:length(linearSystem)])
 
 dimensionOfLinearSystem = Oscar.dim(ideal(linearSystem))
 
@@ -220,5 +219,6 @@ directions = [TT.(QQ(ε) * QQ.(direction)) for direction in directions]
 
 
 # CONSTRUCT DUAL CELLS
-hypersurfaceDualSupports = dual_weight.(linearisedBinomialSystem)
-linearDualCell = dual_cell(Linear, tropicalPlueckerVector, activeIndices)
+hypersurfaceDualCells = dual_cell.(perturbedTropicalBinomialSystem.^2)
+linearDualCell = dual_cell(InvertedLinear, linearMatrix, nu, indicatorVectors[allowedIndices])
+mixedCell = mixed_cell([linearDualCell, hypersurfaceDualCells...])

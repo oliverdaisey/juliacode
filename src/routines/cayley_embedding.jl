@@ -1,7 +1,7 @@
 using Oscar
 
 """
-Cayley embedding given a vector of point configurations.
+Cayley embedding given a vector of point configurations. The points should be given as row vectors.
 """
 function cayley_embedding(N::Vector{QQMatrix})
 

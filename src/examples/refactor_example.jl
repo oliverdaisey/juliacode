@@ -27,5 +27,10 @@ t = mixed_cell_tracker(h, s)
 # verify stable intersection point
 println("Stable intersection point = ", stable_intersection_point(s))
 
-# compute tropical drift
-println("Tropical drift = ", tropical_drift(t))
+# run tropical homotopy continuation
+newMixedCells = tropical_homotopy_continuation(t)
+
+# check the stable intersection points afterwards 
+for newMixedCell in newMixedCells
+    println("Stable intersection point = ", stable_intersection_point(newMixedCell))
+end

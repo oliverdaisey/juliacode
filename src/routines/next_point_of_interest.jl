@@ -14,41 +14,39 @@ function next_point_of_interest(T::MixedCellTracker)
     h = T.mixed_path
     pointer_index = 1
     fraction = QQFieldElem(0)
-
-    lengths = length.(dual_weight.(dual_cells(mixed_cell(T))))
+    lengths = length.(ambient_support.(dual_cells(mixed_cell(T))))
 
     # deal with case that the mixed path only has one node left
-    if pointer_index == length(pointers(h))
+    if length(pointers(h)) == 1
         return nothing, [] # this means that this mixed cell tracker is done
     end
 
 
-    dual_path_pointers = pointers(h)[pointer_index]
+    dual_path_pointers = pointers(h)[1]
     n = length(dual_path_pointers)
 
     # get the lift at this time
-    lift = QQ.(vcat(mixed_vector(T)...))
+    lift = QQ.(vcat(to_vector.(mixed_vector(T))...))
 
     # get direction path is travelling in dual space
-    next_dual_path_pointers = pointers(h)[pointer_index+1]
-    direction = vcat([nodes(dual_paths(h)[i])[next_dual_path_pointers[i]] for i in 1:n]...) ./ vcat([nodes(dual_paths(h)[i])[dual_path_pointers[i]] for i in 1:n]...)
+    next_dual_path_pointers = pointers(h)[2]
 
     C_s = mixed_cell_cone(s)
 
     # starting at `lift` and moving in the direction `direction`, when do we hit facet of C_s?
     # we want to find the smallest t such that lift + t*direction is on the facet of C_s
-    t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, QQ.(direction))
+    t = ray_intersects_cone(mixed_cell_cone_to_polyhedron(C_s), lift, QQ.(direction(h, 1)))
 
     if isnothing(t) || t > 1 
         # this means that the breaking point does not exist or takes us away from the path, so we should return the next node (no supports change)
-        partitionedVector = partition_vector(lengths, h[2])
+        partitionedVector = to_vector.(h[2])
         update_dual_weights!(T, partitionedVector)
         update_path(T)
         return partitionedVector, []
     end
 
     # otherwise we are in the case that the breaking point exists, work out which supports change
-    facet_point = lift + t*QQ.(direction)
+    facet_point = lift + t*QQ.(direction(h,1))
 
     # get supports that change
     support_indices = []
@@ -85,7 +83,7 @@ end
 function update_dual_weights!(T::MixedCellTracker, newDualWeights::Vector{Vector{Oscar.TropicalSemiringElem{minOrMax}}}) where {minOrMax<:Union{typeof(min),typeof(max)}}
     s = mixed_cell(T)
     for i in 1:length(dual_cells(s))
-        s.dual_cells[i].dualWeight = newDualWeights[i]
+        update!(s.dual_cells[i].dualWeight, newDualWeights[i])
     end
 end
 

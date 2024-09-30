@@ -17,8 +17,6 @@ function is_dual_cell_candidate(S, Ss::Vector{Vector{Int}})
 end
 
 
-
-
 function is_loopless(S, s::Vector{Int})
     return is_loopless(S, S[s])
 end

@@ -2,7 +2,7 @@
 function inflation(dualCell::DualCell, breakingPoint::Vector{Oscar.TropicalSemiringElem{minOrMax}}, drift::Vector{QQFieldElem}) where {minOrMax<:Union{typeof(min),typeof(max)}}
     
     # create all dual cells with respect to the breaking point
-    breakingPointDualCells = dual_cells(ambient_support(dualCell), breakingPoint)
+    breakingPointDualCells = dual_cells(dualCell, breakingPoint)
 
     epsilon = QQ(1//1000)
 
